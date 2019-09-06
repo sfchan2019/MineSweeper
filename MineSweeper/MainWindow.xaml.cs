@@ -30,8 +30,9 @@ namespace MineSweeper
 
         void InitializeGame()
         {
-            board = new Board(9, 5);
+            board = new Board(9, 6);
             this.Content = board.GameBoard;
+            this.SizeToContent = SizeToContent.WidthAndHeight;
         }
     }
 
@@ -74,9 +75,6 @@ namespace MineSweeper
                 MessageBox.Show("Boom");
             else
             {
-                //MessageBox.Show("Safe");
-                //NeighbourNumber(id, gameBoard.Row, gameBoard.Column);
-
                 int count = NumberOfMineNearby(GetNeighbourTile());
                 this.button.Content = count.ToString();
                 this.button.IsEnabled = false;
