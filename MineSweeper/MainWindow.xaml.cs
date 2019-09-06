@@ -58,10 +58,10 @@ namespace MineSweeper
             this.column = column;
             this.row = row;
             this.gameBoard = gameBoard;
-            this.id = row * gameBoard.Column + column;
+            this.id = column + row * gameBoard.Column;
             button = new Button();
             hasMine = false;
-            button.Content = ((row * gameBoard.Column) + column).ToString();
+            //button.Content = ((row * gameBoard.Column) + column).ToString();
             button.Click += OnTileClick;
             Grid.SetColumn(this.button, column);
             Grid.SetRow(this.button, row);
@@ -70,45 +70,76 @@ namespace MineSweeper
 
         public void OnTileClick(object sender, RoutedEventArgs e)
         {
-            //if (hasMine)
-            //    MessageBox.Show("Boom");
-            //else
-            //{
-            //    //MessageBox.Show("Safe");
-            //}
+            if (hasMine)
+                MessageBox.Show("Boom");
+            else
+            {
+                //MessageBox.Show("Safe");
+                //NeighbourNumber(id, gameBoard.Row, gameBoard.Column);
 
-            NeighbourNumber(id, gameBoard.Row, gameBoard.Column);
-
+                int count = NumberOfMineNearby(GetNeighbourTile());
+                this.button.Content = count.ToString();
+                this.button.IsEnabled = false;
+            }
         }
 
         List<int> NeighbourNumber(int i, int row, int column)
         {
-            int x = i % row;
+            int x = i % column;
             int y = i / column;
 
             List<int> numbers = new List<int>();
-            //Top row
-            if (y == 0)
-                MessageBox.Show("TopRow");
-            if (y == row-1)
-                MessageBox.Show("BottomRow");
-            if (y == 0)
-                MessageBox.Show("LeftColumn");
-            if (y == column - 1)
-                MessageBox.Show("RightColumn");
+
+            //if (y == 0)
+            //    MessageBox.Show("TopRow");
+            //if (y == row - 1)
+            //    MessageBox.Show("BottomRow");
+            //if (x == 0)
+            //    MessageBox.Show("LeftColumn");
+            //if (x == column - 1)
+            //    MessageBox.Show("RightColumn");
+
+            if (x != 0)
+                numbers.Add(i - 1);
+            if (x != column - 1)
+                numbers.Add(i + 1);
+            if (y != 0)
+                numbers.Add(i - column);
+            if (y != 0 && x != 0)
+                numbers.Add(i - column - 1);
+            if (y != 0 && x != column - 1)
+                numbers.Add(i - column + 1);
+            if (y != row - 1)
+                numbers.Add(i + column);
+            if (y != row - 1 && x != column - 1)
+                numbers.Add(i + column + 1);
+            if (y != row - 1 && x != 0)
+                numbers.Add(i + column - 1);
+        
             return numbers;
         }
 
         List<Tile> GetNeighbourTile()
         {
             List<Tile> tiles = new List<Tile>();
-            List<int> numbers = NeighbourNumber(id, gameBoard.Row, gameBoard.Column);
+            List<int> numbers = NeighbourNumber(this.id, gameBoard.Row, gameBoard.Column);
             foreach (int i in numbers)
             {
                 tiles.Add(gameBoard.Tiles[i]);
             }
 
             return tiles;
+        }
+
+        int NumberOfMineNearby(List<Tile> tiles)
+        {
+            int count = 0;
+            foreach (Tile t in tiles)
+            {
+                if (t.hasMine)
+                    count++;
+            }
+            return count;
         }
     }
 
