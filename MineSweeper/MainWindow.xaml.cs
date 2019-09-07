@@ -30,7 +30,7 @@ namespace MineSweeper
 
         void InitializeGame()
         {
-            board = new Board(9, 6);
+            board = new Board(25, 16, 50);
             this.Content = board.GameBoard;
             this.SizeToContent = SizeToContent.WidthAndHeight;
         }
@@ -44,6 +44,10 @@ namespace MineSweeper
         int column;
         int id;
         bool hasMine;
+        bool isFinish;
+        bool isS = false;
+
+
         public bool HasMine
         {
             get { return hasMine; }
@@ -60,9 +64,9 @@ namespace MineSweeper
             this.row = row;
             this.gameBoard = gameBoard;
             this.id = column + row * gameBoard.Column;
+            this.isFinish = false;
             button = new Button();
             hasMine = false;
-            //button.Content = ((row * gameBoard.Column) + column).ToString();
             button.Click += OnTileClick;
             Grid.SetColumn(this.button, column);
             Grid.SetRow(this.button, row);
@@ -71,14 +75,46 @@ namespace MineSweeper
 
         public void OnTileClick(object sender, RoutedEventArgs e)
         {
+            this.isFinish = true;
             if (hasMine)
                 MessageBox.Show("Boom");
             else
             {
-                int count = NumberOfMineNearby(GetNeighbourTile());
-                this.button.Content = count.ToString();
-                this.button.IsEnabled = false;
+                this.SweepMine();
             }
+        }
+
+        private void SweepMine()
+        {
+            this.button.IsEnabled = false;
+
+            List<Tile> neighbour = GetNeighbourTile();
+            int count = NumberOfMineNearby(neighbour);
+
+            if (count != 0)
+            {
+                this.button.Content = count.ToString();
+            }
+            else
+            {
+                this.button.Content = "";
+                foreach (Tile t in neighbour) {
+                    t.Spread();
+                } 
+                //foreach (Tile t in neighbour)
+                //{
+                //    if (!t.isFinish && t.NumberOfMineNearby(t.GetNeighbourTile()) == 0)
+                //    {
+                //        t.SweepMine();
+                //    }
+                //}
+            }
+            this.button.IsEnabled = false;
+        }
+
+        private void Spread()
+        {
+            this.button.Content = "S";
         }
 
         List<int> NeighbourNumber(int i, int row, int column)
@@ -88,42 +124,34 @@ namespace MineSweeper
 
             List<int> numbers = new List<int>();
 
-            //if (y == 0)
-            //    MessageBox.Show("TopRow");
-            //if (y == row - 1)
-            //    MessageBox.Show("BottomRow");
-            //if (x == 0)
-            //    MessageBox.Show("LeftColumn");
-            //if (x == column - 1)
-            //    MessageBox.Show("RightColumn");
-
-            if (x != 0)
+            if (x != 0)                             //if not on the left column
                 numbers.Add(i - 1);
-            if (x != column - 1)
+            if (x != column - 1)                    //if not on the right column
                 numbers.Add(i + 1);
-            if (y != 0)
+            if (y != 0)                             //if not on the top row
                 numbers.Add(i - column);
-            if (y != 0 && x != 0)
+            if (y != 0 && x != 0)                   //if not on the top row AND not on the left column
                 numbers.Add(i - column - 1);
-            if (y != 0 && x != column - 1)
+            if (y != 0 && x != column - 1)          //if not on the top row AND not on the right column
                 numbers.Add(i - column + 1);
-            if (y != row - 1)
+            if (y != row - 1)                       //if not on the button row
                 numbers.Add(i + column);
-            if (y != row - 1 && x != column - 1)
+            if (y != row - 1 && x != column - 1)    //if not on the bottm row AND not on the right column
                 numbers.Add(i + column + 1);
-            if (y != row - 1 && x != 0)
+            if (y != row - 1 && x != 0)             //if not on the bottom row AND not on the left column
                 numbers.Add(i + column - 1);
         
             return numbers;
         }
 
-        List<Tile> GetNeighbourTile()
+        private List<Tile> GetNeighbourTile()
         {
             List<Tile> tiles = new List<Tile>();
             List<int> numbers = NeighbourNumber(this.id, gameBoard.Row, gameBoard.Column);
             foreach (int i in numbers)
             {
-                tiles.Add(gameBoard.Tiles[i]);
+                if (!gameBoard.Tiles[i].isFinish)
+                    tiles.Add(gameBoard.Tiles[i]);
             }
 
             return tiles;
@@ -144,23 +172,21 @@ namespace MineSweeper
     public class Board
     {
         List<Tile> tiles;
-        public List<Tile> Tiles {get{return tiles;} }
         Grid gameBoard;
-        public Grid GameBoard
-        {
-            get { return gameBoard; }
-        }
-
-        public int Row { get { return row; } set { row = value; }  }
-        public int Column { get { return column; }  set { column = value; } }
-
         int row;
         int column;
+        int mine;
 
-        public Board(int row, int column)
+        public List<Tile> Tiles { get { return tiles; } }
+        public Grid GameBoard { get { return gameBoard; } }
+        public int Row { get { return row; } set { row = value; } }
+        public int Column { get { return column; } set { column = value; } }
+
+        public Board(int row, int column, int mine)
         {
             this.row = row;
             this.column = column;
+            this.mine = mine;
             Initialize();
         }
 
@@ -179,7 +205,6 @@ namespace MineSweeper
             gameBoard.ShowGridLines = true;
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
 
-
             //Create rows
             for (int i = 0; i < row; i++)
             {
@@ -193,19 +218,18 @@ namespace MineSweeper
                     ColumnDefinition columnDef = new ColumnDefinition();
                     columnDef.Width = new GridLength(blockSize);
                     gameBoard.ColumnDefinitions.Add(columnDef);
-
                     Tile tile = new Tile(i, j, this);
                     tiles.Add(tile);
                 }
             }
-            SetMine(RandomNumber(10), tiles);
+            SetMine(RandomNumber(mine), tiles);
         }
 
-        public List<int> RandomNumber(int num_of_items)
+        public List<int> RandomNumber(int num_of_mine)
         {
             List<int> numbers = new List<int>();
             Random random = new Random();
-            for (int i = 0; i < num_of_items; i++)
+            for (int i = 0; i < num_of_mine; i++)
             {
                 int rand = random.Next(0, (row * column) - 1);
                 numbers.Add(rand);
