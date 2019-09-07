@@ -282,4 +282,15 @@ namespace MineSweeper
                 Initialize();
         }
     }
+
+    public class Menu
+    {
+        private MainWindow gameWindow;
+        public Menu(MainWindow window)
+        {
+            gameWindow = window;
+        }
+
+
+    }
 }
