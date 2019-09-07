@@ -25,12 +25,12 @@ namespace MineSweeper
         public MainWindow()
         {
             InitializeComponent();
-            InitializeGame();
+            InitializeGame(25, 16, 40);
         }
 
-        void InitializeGame()
+        void InitializeGame(int row, int column, int mine)
         {
-            board = new Board(25, 16, 50);
+            board = new Board(row, column, mine);
             this.Content = board.GameBoard;
             this.SizeToContent = SizeToContent.WidthAndHeight;
         }
@@ -57,19 +57,38 @@ namespace MineSweeper
             this.isFinish = false;
             button = new Button();
             hasMine = false;
-            button.Click += OnTileClick;
+            button.Click += OnLeftClickTile;
+            button.PreviewMouseRightButtonDown += OnRightClickTile;
             Grid.SetColumn(this.button, column);
             Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
         }
 
-        public void OnTileClick(object sender, RoutedEventArgs e)
+        public void OnRightClickTile(object sender, RoutedEventArgs e)
+        {
+            FlagTile();
+        }
+
+        public void FlagTile()
+        {
+            isFinish = !isFinish;
+            if (isFinish)
+                SetTileImage("F");
+            else
+                SetTileImage("");
+        }
+
+        public void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
             if (isFinish)
                 return;
             this.isFinish = true;
             if (hasMine)
+            {
                 MessageBox.Show("Boom");
+                gameBoard.ShowAllMine();
+            }
+            
             else
             {
                 this.SweepMine();
@@ -131,16 +150,34 @@ namespace MineSweeper
                 if (temp.hasMine)
                     count++;
             }
-
-            if (count == 0)
-            {
-                foreach (int i in numbers)
-                {
-                    Tile temp = gameBoard.Tiles[i];
-                    temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                }
-            }
+            if (count == 0) //if no mine is around, automatically check all the neighbours.
+                InvokeNeighbourTiles(numbers);
             return count;
+        }
+
+        private void InvokeNeighbourTiles(List<int> numbers)
+        {
+            foreach (int i in numbers)
+            {
+                Tile temp = gameBoard.Tiles[i];
+                temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
+        }
+
+        public void SetTileImage(string text)
+        {
+            //button.Content = text;
+            switch (text)
+            {
+                case "M":
+                    ////button.Content = new Image { Source = new BitmapImage(new Uri("")), VerticalAlignment = VerticalAlignment.Center }
+                    //BitmapImage btm = new BitmapImage(new Uri("/MineSweeper;Resources/mine.png", UriKind.Relative));
+                    //button.Content = new Image { Source = btm };
+                    break;
+                default:
+                    button.Content = text;
+                    break;
+            }
         }
 
         public void SetMine(bool mine)
@@ -231,6 +268,15 @@ namespace MineSweeper
         {
             foreach (int i in numbers)
                 tiles[i].SetMine(true);
+        }
+
+        public void ShowAllMine()
+        {
+            foreach (Tile t in tiles)
+            {
+                if (t.HasMine)
+                    t.SetTileImage("M");
+            }
         }
     }
 }
