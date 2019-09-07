@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+
 
 namespace MineSweeper
 {
@@ -30,9 +32,7 @@ namespace MineSweeper
 
         void InitializeGame(int row, int column, int mine)
         {
-            board = new Board(row, column, mine);
-            this.Content = board.GameBoard;
-            this.SizeToContent = SizeToContent.WidthAndHeight;
+            board = new Board(row, column, mine, this);
         }
     }
 
@@ -76,7 +76,7 @@ namespace MineSweeper
                 SetTileImage("F");
             else
                 SetTileImage("");
-        }
+        }       
 
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
@@ -85,13 +85,11 @@ namespace MineSweeper
             this.isFinish = true;
             if (hasMine)
             {
-                MessageBox.Show("Boom");
-                gameBoard.ShowAllMine();
+                gameBoard.Gameover();
             }
-            
             else
             {
-                this.SweepMine();
+                SweepMine();
             }
         }
 
@@ -170,9 +168,14 @@ namespace MineSweeper
             switch (text)
             {
                 case "M":
-                    ////button.Content = new Image { Source = new BitmapImage(new Uri("")), VerticalAlignment = VerticalAlignment.Center }
-                    //BitmapImage btm = new BitmapImage(new Uri("/MineSweeper;Resources/mine.png", UriKind.Relative));
-                    //button.Content = new Image { Source = btm };
+                    Image image = new Image();
+                    BitmapImage btm = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
+                    image.Source = btm;
+                    button.Content = image;
+
+                    //MessageBox.Show(button.Content.ToString());
+
+
                     break;
                 default:
                     button.Content = text;
@@ -198,6 +201,7 @@ namespace MineSweeper
 
     public class Board
     {
+        private MainWindow gameWindow;
         List<Tile> tiles;
         Grid gameBoard;
         int row;
@@ -209,8 +213,9 @@ namespace MineSweeper
         public int Row { get { return row; } set { row = value; } }
         public int Column { get { return column; } set { column = value; } }
 
-        public Board(int row, int column, int mine)
+        public Board(int row, int column, int mine, MainWindow window)
         {
+            this.gameWindow = window;
             this.row = row;
             this.column = column;
             this.mine = mine;
@@ -250,6 +255,9 @@ namespace MineSweeper
                 }
             }
             SetMine(RandomNumber(mine), tiles);
+
+            gameWindow.Content = this.gameBoard;
+            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         public List<int> RandomNumber(int num_of_mine)
@@ -277,6 +285,14 @@ namespace MineSweeper
                 if (t.HasMine)
                     t.SetTileImage("M");
             }
+        }
+
+        public void Gameover()
+        {
+            ShowAllMine();
+            MessageBoxResult result = MessageBox.Show("Boom", "Gameover!");
+            if (result == MessageBoxResult.OK)
+                Initialize();
         }
     }
 }
