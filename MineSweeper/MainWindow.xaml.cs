@@ -84,13 +84,9 @@ namespace MineSweeper
                 return;
             this.isFinish = true;
             if (hasMine)
-            {
                 gameBoard.Gameover();
-            }
             else
-            {
                 SweepMine();
-            }
         }
 
         private void SweepMine()
@@ -99,15 +95,9 @@ namespace MineSweeper
 
             int count = CountNearMine();
             if (count != 0)
-            {
-                //set image?
-                this.button.Content = count.ToString();
-            }
+                SetTileImage(count.ToString());
             else
-            {
-                //set image?
-                this.button.Content = "";
-            }
+                SetTileImage("");
         }
 
         List<int> AllNeighbourNumber(int i)
@@ -164,18 +154,10 @@ namespace MineSweeper
 
         public void SetTileImage(string text)
         {
-            //button.Content = text;
             switch (text)
             {
                 case "M":
-                    Image image = new Image();
-                    BitmapImage btm = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
-                    image.Source = btm;
-                    button.Content = image;
-
-                    //MessageBox.Show(button.Content.ToString());
-
-
+                    button.Content = new Image() { Source = gameBoard.MineImage };
                     break;
                 default:
                     button.Content = text;
@@ -201,6 +183,7 @@ namespace MineSweeper
 
     public class Board
     {
+        private BitmapImage mineImage;
         private MainWindow gameWindow;
         List<Tile> tiles;
         Grid gameBoard;
@@ -208,6 +191,7 @@ namespace MineSweeper
         int column;
         int mine;
 
+        public BitmapImage MineImage { get { return mineImage; } }
         public List<Tile> Tiles { get { return tiles; } }
         public Grid GameBoard { get { return gameBoard; } }
         public int Row { get { return row; } set { row = value; } }
@@ -219,6 +203,9 @@ namespace MineSweeper
             this.row = row;
             this.column = column;
             this.mine = mine;
+
+            mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
+
             Initialize();
         }
 
