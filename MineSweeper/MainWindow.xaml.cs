@@ -24,15 +24,23 @@ namespace MineSweeper
     public partial class MainWindow : Window
     {
         Board board;
+        Menu mainMenu;
+        public Menu MainMenu { get { return mainMenu; } }
         public MainWindow()
         {
             InitializeComponent();
-            InitializeGame(25, 16, 40);
+            InitializeMenu();
+            //InitializeGame(25, 16, 40);
         }
 
-        void InitializeGame(int row, int column, int mine)
+        public void InitializeGame(int row, int column, int mine)
         {
             board = new Board(row, column, mine, this);
+        }
+
+        public void InitializeMenu()
+        {
+            mainMenu = new Menu(this);
         }
     }
 
@@ -279,18 +287,88 @@ namespace MineSweeper
             ShowAllMine();
             MessageBoxResult result = MessageBox.Show("Boom", "Gameover!");
             if (result == MessageBoxResult.OK)
-                Initialize();
+                //Initialize();
+                gameWindow.InitializeMenu();
         }
     }
 
     public class Menu
     {
+        Canvas canvas;
+        ComboBox levelOption;
+        ComboBoxItem easy;
+        ComboBoxItem medium;
+        ComboBoxItem difficut;
+        Button startButton;
+        
         private MainWindow gameWindow;
         public Menu(MainWindow window)
         {
             gameWindow = window;
+
+            Initialize();
         }
 
+        public void Initialize()
+        {
+            //    <Canvas HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Top" Width="Auto">
+            //    <ComboBox x:Name="levelOption" Height="22" Canvas.Left="284" Canvas.Top="221" Width="100">
+            //    <ComboBoxItem IsSelected="True">Easy</ComboBoxItem>
+            //    <ComboBoxItem>Medium</ComboBoxItem>
+            //    <ComboBoxItem>Difficult</ComboBoxItem>
+            //    </ComboBox>
+            //    <Button x:Name="startButton" Content="Start" Canvas.Left="300" Canvas.Top="260" Width="75" Click="startButton_Click"/>
+            //</Canvas>
+            canvas = new Canvas();
+            canvas.Height = 400;
+            canvas.Width = 250;
+            canvas.HorizontalAlignment = HorizontalAlignment.Stretch;
+            canvas.VerticalAlignment = VerticalAlignment.Stretch;
 
+            levelOption = new ComboBox();
+            levelOption.Height = 22;
+            levelOption.Width = 100;
+            levelOption.HorizontalAlignment = HorizontalAlignment.Center;
+            levelOption.VerticalAlignment = VerticalAlignment.Center;
+
+            easy = new ComboBoxItem();
+            easy.Content = "Easy";
+            levelOption.Items.Add(easy);
+
+            medium = new ComboBoxItem();
+            medium.Content = "Medium";
+            levelOption.Items.Add(medium);
+
+            difficut = new ComboBoxItem();
+            difficut.Content = "Difficult";
+            levelOption.Items.Add(difficut);
+
+            canvas.Children.Add(levelOption);
+
+            startButton = new Button();
+            startButton.Width = 75;
+            startButton.Content = "Start";
+            startButton.Click += startButton_Click;
+            canvas.Children.Add(startButton);
+
+            gameWindow.Content = this.canvas;
+            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+        }
+
+        private void startButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (levelOption.SelectedIndex)
+            {
+                case 0:
+                    gameWindow.InitializeGame(6, 6, 20);
+                    break;
+                case 1:
+                    gameWindow.InitializeGame(25, 16, 60);
+                    break;
+                case 2:
+                    gameWindow.InitializeGame(25, 25, 120);
+                    break;
+            }
+        }
     }
 }
