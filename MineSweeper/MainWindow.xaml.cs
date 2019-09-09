@@ -43,7 +43,7 @@ namespace MineSweeper
             board.GameboardEvent += OnGameover;
         }
 
-        private void OnGameover(object sender, RoutedEventArgs e)
+        private void OnGameover(object sender, EventArgs e)
         {
             InitializeMenu();
         }

@@ -29,6 +29,7 @@ namespace Game
         bool isFinish;
 
         public bool HasMine { get { return hasMine; } }
+        public bool IsFinish { get { return isFinish; } }
 
         public Tile(int row, int column, Board gameBoard)
         {
@@ -80,7 +81,11 @@ namespace Game
             this.isFinish = true;
             gameBoard.FinishCount++;
             if (hasMine)
+            {
                 gameBoard.Gameover();
+                button.Content = new Image() { Source = gameBoard.MineImage };
+            }
+            
             else
                 SweepMine();
         }
@@ -88,6 +93,7 @@ namespace Game
         private void SweepMine()
         {
             //this.button.IsEnabled = false;
+            gameBoard.Players[gameBoard.Turn].Score++;
             this.button.MouseRightButtonDown -= OnRightClickTile;
             int count = CountNearMine();
             if (count != 0)
@@ -97,7 +103,7 @@ namespace Game
             else
             {
                 this.button.IsEnabled = false;
-                SetTileImage("");
+                //SetTileImage("");
             }
         }
 
@@ -149,6 +155,15 @@ namespace Game
             foreach (int i in numbers)
             {
                 Tile temp = gameBoard.Tiles[i];
+                if (temp.hasMine && !temp.isFinish)
+                {
+                    temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    return;
+                }
+            }
+            foreach (int i in numbers)
+            {
+                Tile temp = gameBoard.Tiles[i];
                 temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             }
         }
@@ -157,19 +172,22 @@ namespace Game
         {
             switch (text)
             {
-                case "M":
+                case "M":   //Mine
                     button.Content = new Image() { Source = gameBoard.MineImage };
                     break;
-                case "F":
+                case "F":   //Flag
                     button.Content = new Image() { Source = gameBoard.FlagImage };
                     break;
-                case "U":
+                case "U":   //Unflag
                     button.Content = "";
                     button.Background = Brushes.LightGray;
                     break;
                 default:
                     button.Content = text;
-                    button.Background = Brushes.White;
+                    if (gameBoard.Turn == 0)
+                        button.Background = Brushes.Red;
+                    else if (gameBoard.Turn == 1)
+                        button.Background = Brushes.Blue;
                     break;
             }
         }
@@ -180,11 +198,19 @@ namespace Game
         }
     }
 
+    public class GameboardEventArgs : EventArgs
+    {
+        public GameboardEventArgs()
+        {
+
+        }
+    }
+
     public class Board
     {
-        public delegate void GameboardEventHandler(object sender, RoutedEventArgs e);
+        public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
         public event GameboardEventHandler GameboardEvent;    
-        public void RaiseEvent(RoutedEventArgs e)
+        public void RaiseEvent(GameboardEventArgs e)
         {
             if (GameboardEvent != null)
                 GameboardEvent(this, e);
@@ -199,6 +225,8 @@ namespace Game
         int column;
         int mine;
         int finishCount;
+        int turn;
+        List<Player> players;
 
         public BitmapImage FlagImage { get { return flagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
@@ -206,6 +234,8 @@ namespace Game
         public Grid GameBoard { get { return gameBoard; } }
         public int Row { get { return row; } set { row = value; } }
         public int Column { get { return column; } set { column = value; } }
+        public int Turn { get { return turn; } set { turn = value; } }
+        public List<Player> Players { get { return players; } }
         public int FinishCount
         {
             get { return finishCount; }
@@ -264,6 +294,10 @@ namespace Game
             }
             SetMine(RandomNumber(mine), tiles);
 
+            players = new List<Player>();
+            players.Add(new Player(0));
+            players.Add(new Player(1));
+
             gameWindow.Content = this.gameBoard;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
@@ -290,16 +324,22 @@ namespace Game
         {
             foreach (Tile t in tiles)
             {
-                if (t.HasMine)
+                if (t.HasMine && !t.IsFinish)
                     t.SetTileImage("M");
             }
         }
 
         public void Gameover()
         {
-            ShowAllMine();
-            MessageBoxResult result = MessageBox.Show("Boom", "Gameover!");
-            RaiseEvent(new RoutedEventArgs());
+            //ShowAllMine();
+            
+            MessageBoxResult result = MessageBox.Show("Player" + turn + ": " + players[turn].Score.ToString(), "Gameover!");
+            if (turn == 0)
+                turn = 1;
+            else if (turn == 1)
+                turn = 0;
+            //RaiseEvent(new RoutedEventArgs());
+            //RaiseEvent(new GameboardEventArgs());
         }
     }
 
@@ -344,18 +384,14 @@ namespace Game
 
             easy = new ComboBoxItem();
             easy.Content = "Easy";
-            //easy.HorizontalAlignment = HorizontalAlignment.Center;
-            //easy.IsSelected = true;
             levelOption.Items.Add(easy);
 
             normal = new ComboBoxItem();
             normal.Content = "Normal";
-            //normal.HorizontalAlignment = HorizontalAlignment.Center;
             levelOption.Items.Add(normal);
 
             difficult = new ComboBoxItem();
             difficult.Content = "Difficult";
-            //difficult.HorizontalAlignment = HorizontalAlignment.Center;
             difficult.IsSelected = true;
             levelOption.Items.Add(difficult);
 
@@ -375,5 +411,12 @@ namespace Game
 
     public class Player
     {
+        int score;
+        int id;
+
+        public int Score { get { return score; } set { score = value; } }
+        public int Id { get { return id; } }
+
+        public Player(int id) { this.id = id; }
     }
 }
