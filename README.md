@@ -3,7 +3,7 @@ This repository was created to submit my Mine Sweeper game
 
 ## Day 1
 ### General Implementation
-* Invoke surround tiles using double click;
+* Invoke surrounding tiles using double click;
 * Invoke a single tile using left click;
 * Flag and unflag a tile using right click;
 * Programmatically generate gameboard (grid);
