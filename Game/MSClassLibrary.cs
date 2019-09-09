@@ -84,18 +84,19 @@ namespace Game
             gameBoard.FinishCount++;
             if (hasMine)
             {
-                gameBoard.Gameover();
+                //gameBoard.Gameover();
+                gameBoard.Players[gameBoard.Turn].Score++;
                 button.Content = new Image() { Source = gameBoard.MineImage };
             }
-            
             else
+            {
                 SweepMine();
+                //gameBoard.SwitchPlayerTurn();
+            }
         }
 
         private void SweepMine()
         {
-            //this.button.IsEnabled = false;
-            gameBoard.Players[gameBoard.Turn].Score++;
 
             this.button.MouseRightButtonDown -= OnRightClickTile;
             int count = CountNearMine();
@@ -106,7 +107,6 @@ namespace Game
             else
             {
                 this.button.IsEnabled = false;
-                //SetTileImage("");
             }
         }
 
@@ -355,6 +355,14 @@ namespace Game
                 turn = 0;
             //RaiseEvent(new RoutedEventArgs());
             //RaiseEvent(new GameboardEventArgs());
+        }
+
+        public void SwitchPlayerTurn()
+        {
+            if (turn == 0)
+                turn = 1;
+            else if (turn == 1)
+                turn = 0;
         }
     }
 
