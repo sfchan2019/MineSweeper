@@ -35,7 +35,7 @@ namespace MineSweeper
         public void InitializeMenu()
         {
             menu = new Game.Menu(this);
-            menu.StartButton.Click += startButton_Click;
+            menu.StartButton.Click += OnStartButtonClick;
         }
         public void InitializeGame(int row, int column, int mine)
         {
@@ -48,20 +48,22 @@ namespace MineSweeper
             InitializeMenu();
         }
 
-        private void startButton_Click(object sender, RoutedEventArgs e)
+        private void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
             switch (menu.LevelOption.SelectedIndex)
             {
-                case 0:
-                    InitializeGame(6, 6, 20);
+                case 0: //Easy                  //36,45
+                    InitializeGame(6, 6, 10);  //number of row, column and mine
                     break;
-                case 1:
-                    InitializeGame(25, 16, 60);
+                case 1: //Normal
+                    InitializeGame(25, 16, 60); //400,30
                     break;
-                case 2:
-                    InitializeGame(25, 25, 120);
+                case 2: //Difficult
+                    InitializeGame(25, 25, 120);    //625,20
                     break;
             }
         }
+
+
     }
 }
