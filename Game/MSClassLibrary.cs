@@ -55,6 +55,8 @@ namespace Game
 
         public void OnDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (IsFinish)
+                return;
             if(e.ChangedButton == MouseButton.Left)
             InvokeNeighbourTiles(AllNeighbourNumber(this.id));
         }
@@ -94,6 +96,7 @@ namespace Game
         {
             //this.button.IsEnabled = false;
             gameBoard.Players[gameBoard.Turn].Score++;
+
             this.button.MouseRightButtonDown -= OnRightClickTile;
             int count = CountNearMine();
             if (count != 0)
@@ -227,6 +230,7 @@ namespace Game
         int finishCount;
         int turn;
         List<Player> players;
+        Canvas canvas;
 
         public BitmapImage FlagImage { get { return flagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
@@ -262,15 +266,21 @@ namespace Game
 
         public void Initialize()
         {
+            canvas = new Canvas();
+            double topPadding = 100.0f;
             tiles = new List<Tile>();
             gameBoard = new Grid();
             float blockSize = 50 - row;
             finishCount = 0;
 
+            canvas.Width = column * blockSize;
+            canvas.Height = row * blockSize + topPadding;
+
             // Create the Grid
             gameBoard = new Grid();
             gameBoard.Width = column * blockSize;
             gameBoard.Height = row * blockSize;
+            gameBoard.SetValue(Canvas.TopProperty, topPadding);
             gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
             gameBoard.VerticalAlignment = VerticalAlignment.Top;
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
@@ -298,7 +308,12 @@ namespace Game
             players.Add(new Player(0));
             players.Add(new Player(1));
 
-            gameWindow.Content = this.gameBoard;
+            new PlayerHUD(this.canvas, players[0], 0);
+            new PlayerHUD(this.canvas, players[1], 1);
+
+            canvas.Children.Add(this.gameBoard);
+            //gameWindow.Content = this.gameBoard;
+            gameWindow.Content = this.canvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
@@ -340,6 +355,60 @@ namespace Game
                 turn = 0;
             //RaiseEvent(new RoutedEventArgs());
             //RaiseEvent(new GameboardEventArgs());
+        }
+    }
+
+    public class PlayerHUD
+    {
+        Canvas canvas;
+        Player player;
+        Label scoreLabel;
+        int id;
+
+        public PlayerHUD(Canvas canvas, Player player, int id)
+        {
+            this.canvas = canvas;
+            this.player = player;
+            this.id = id;
+            Initialize();
+        }
+        public virtual void Initialize()
+        {
+            Label playerLabel01 = new Label();
+            if (id == 0)
+            {
+                playerLabel01.Content = "Player01";
+                playerLabel01.SetValue(Canvas.LeftProperty, 20.0);
+                playerLabel01.SetValue(Canvas.TopProperty, 20.0);
+                canvas.Children.Add(playerLabel01);
+
+                scoreLabel = new Label();
+                scoreLabel.Content = player.Score;
+                scoreLabel.SetValue(Canvas.LeftProperty, 20.0);
+                scoreLabel.SetValue(Canvas.TopProperty, 70.0);
+                canvas.Children.Add(scoreLabel);
+            }
+            else
+            {
+                playerLabel01.Content = "Player02";
+                playerLabel01.SetValue(Canvas.RightProperty, 20.0);
+                playerLabel01.SetValue(Canvas.TopProperty, 20.0);
+                canvas.Children.Add(playerLabel01);
+
+                scoreLabel = new Label();
+                scoreLabel.Content = player.Score;
+                scoreLabel.SetValue(Canvas.RightProperty, 20.0);
+                scoreLabel.SetValue(Canvas.TopProperty, 70.0);
+                canvas.Children.Add(scoreLabel);
+            }
+
+
+            player.PlayerHUDs = this;
+        }
+
+        public void UpdateScore(int score)
+        {
+            scoreLabel.Content = score.ToString();
         }
     }
 
@@ -413,8 +482,23 @@ namespace Game
     {
         int score;
         int id;
+        PlayerHUD playerHUDs;
+        public PlayerHUD PlayerHUDs
+        {
+            get { return playerHUDs; }
+            set { playerHUDs = value; }
+        }
 
-        public int Score { get { return score; } set { score = value; } }
+
+        public int Score
+        {
+            get { return score; }
+            set
+            {
+                score = value;
+                playerHUDs.UpdateScore(score);
+            }
+        }
         public int Id { get { return id; } }
 
         public Player(int id) { this.id = id; }
