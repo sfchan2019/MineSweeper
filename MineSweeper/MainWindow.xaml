@@ -5,4 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MineSweeper"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"/>
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style x:Key="OvergroundIn" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="#FF16832F">
+                            <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="0,8,0,0" ></ContentPresenter>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid Background="#FF06731F">
+                                    <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="0,8,0,0" ></ContentPresenter>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="OvergroundOut" TargetType="Button">
+        </Style>
+    </Window.Resources>
+</Window>

@@ -40,16 +40,11 @@ namespace Game
             button = new Button();
             hasMine = false;
             button.Click += OnLeftClickTile;
-            button.IsEnabledChanged += Button_IsEnabledChanged;
-            button.PreviewMouseRightButtonDown += OnRightClickTile;
+            button.MouseDoubleClick += OnDoubleClick;
+            button.MouseRightButtonDown += OnRightClickTile;
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
-        }
-
-        private void Button_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            //MessageBox.Show(e.Property.ToString());
         }
 
         public void OnRightClickTile(object sender, RoutedEventArgs e)
@@ -57,11 +52,15 @@ namespace Game
             FlagTile();
         }
 
+        public void OnDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ChangedButton == MouseButton.Left)
+            InvokeNeighbourTiles(AllNeighbourNumber(this.id));
+        }
+
         public void FlagTile()
         {
-            isFinish = !isFinish;
-
-            if (isFinish)
+            if (!isFinish)
             {
                 SetTileImage("F");
                 gameBoard.FinishCount++;
@@ -71,6 +70,7 @@ namespace Game
                 SetTileImage("");
                 gameBoard.FinishCount--;
             }
+            isFinish = !isFinish;
         }
 
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
@@ -87,13 +87,18 @@ namespace Game
 
         private void SweepMine()
         {
-            this.button.IsEnabled = false;
-
+            //this.button.IsEnabled = false;
+            this.button.MouseRightButtonDown -= OnRightClickTile;
             int count = CountNearMine();
             if (count != 0)
+            {
                 SetTileImage(count.ToString());
+            }
             else
+            {
+                this.button.IsEnabled = false;
                 SetTileImage("");
+            }
         }
 
         List<int> AllNeighbourNumber(int i)
@@ -155,8 +160,12 @@ namespace Game
                 case "M":
                     button.Content = new Image() { Source = gameBoard.MineImage };
                     break;
+                case "F":
+                    button.Content = new Image() { Source = gameBoard.FlagImage };
+                    break;
                 default:
                     button.Content = text;
+                    button.Background = Brushes.White;
                     break;
             }
         }
@@ -177,8 +186,9 @@ namespace Game
                 GameboardEvent(this, e);
         }
 
-        private BitmapImage mineImage;
-        private Window gameWindow;
+        BitmapImage mineImage;
+        BitmapImage flagImage;
+        Window gameWindow;
         List<Tile> tiles;
         Grid gameBoard;
         int row;
@@ -186,6 +196,7 @@ namespace Game
         int mine;
         int finishCount;
 
+        public BitmapImage FlagImage { get { return flagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
         public List<Tile> Tiles { get { return tiles; } }
         public Grid GameBoard { get { return gameBoard; } }
@@ -210,6 +221,7 @@ namespace Game
             this.mine = mine;
 
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
+            flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
 
             Initialize();
         }
@@ -227,7 +239,7 @@ namespace Game
             gameBoard.Height = row * blockSize;
             gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
             gameBoard.VerticalAlignment = VerticalAlignment.Top;
-            gameBoard.ShowGridLines = true;
+            //gameBoard.ShowGridLines = true;
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
 
             //Create rows
@@ -294,7 +306,7 @@ namespace Game
         ComboBox levelOption;
         ComboBoxItem easy;
         ComboBoxItem normal;
-        ComboBoxItem difficut;
+        ComboBoxItem difficult;
         Button startButton;
         Window gameWindow;
         ImageBrush imageBrush;
@@ -329,16 +341,20 @@ namespace Game
 
             easy = new ComboBoxItem();
             easy.Content = "Easy";
-            easy.IsSelected = true;
+            //easy.HorizontalAlignment = HorizontalAlignment.Center;
+            //easy.IsSelected = true;
             levelOption.Items.Add(easy);
 
             normal = new ComboBoxItem();
             normal.Content = "Normal";
+            //normal.HorizontalAlignment = HorizontalAlignment.Center;
             levelOption.Items.Add(normal);
 
-            difficut = new ComboBoxItem();
-            difficut.Content = "Difficult";
-            levelOption.Items.Add(difficut);
+            difficult = new ComboBoxItem();
+            difficult.Content = "Difficult";
+            //difficult.HorizontalAlignment = HorizontalAlignment.Center;
+            difficult.IsSelected = true;
+            levelOption.Items.Add(difficult);
 
             canvas.Children.Add(levelOption);
 

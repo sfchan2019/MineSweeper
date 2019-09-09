@@ -52,14 +52,14 @@ namespace MineSweeper
         {
             switch (menu.LevelOption.SelectedIndex)
             {
-                case 0: //Easy                  //36,45
-                    InitializeGame(6, 6, 10);  //number of row, column and mine
+                case 0: //Easy                 
+                    InitializeGame(6, 6, 7);  //number of row, column and mine
                     break;
                 case 1: //Normal
-                    InitializeGame(25, 16, 60); //400,30
+                    InitializeGame(25, 16, 60);
                     break;
                 case 2: //Difficult
-                    InitializeGame(25, 25, 120);    //625,20
+                    InitializeGame(25, 25, 100);
                     break;
             }
         }
