@@ -67,7 +67,7 @@ namespace Game
             }
             else
             {
-                SetTileImage("");
+                SetTileImage("U");
                 gameBoard.FinishCount--;
             }
             isFinish = !isFinish;
@@ -163,6 +163,10 @@ namespace Game
                 case "F":
                     button.Content = new Image() { Source = gameBoard.FlagImage };
                     break;
+                case "U":
+                    button.Content = "";
+                    button.Background = Brushes.LightGray;
+                    break;
                 default:
                     button.Content = text;
                     button.Background = Brushes.White;
@@ -239,7 +243,6 @@ namespace Game
             gameBoard.Height = row * blockSize;
             gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
             gameBoard.VerticalAlignment = VerticalAlignment.Top;
-            //gameBoard.ShowGridLines = true;
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
 
             //Create rows
@@ -368,5 +371,9 @@ namespace Game
             gameWindow.Content = this.canvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
+    }
+
+    public class Player
+    {
     }
 }
