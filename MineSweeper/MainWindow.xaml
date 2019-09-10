@@ -37,4 +37,6 @@
         <Style x:Key="OvergroundOut" TargetType="Button">
         </Style>
     </Window.Resources>
+    <Rectangle Fill="#FF0B0BD3" HorizontalAlignment="Left" Height="100" Margin="204,223,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
+
 </Window>

@@ -86,7 +86,6 @@ namespace MultiplayerGame
 
         public bool Test()
         {
-            do
             {
                 if (!isFinish)
                 {
@@ -114,21 +113,19 @@ namespace MultiplayerGame
                             foreach (int i in numbers)
                             {
                                 Tile temp = gameBoard.Tiles[i];
-                                //temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                                 temp.Test();
                             }
                         }
                         else
                         {
                             SetTileImage(count.ToString());
-                            break;
+                            return true;
                         }
                     }
                 }
                 else
-                    break;
+                    return true;
             }
-            while (true);
             return true;
         }
 
@@ -224,10 +221,11 @@ namespace MultiplayerGame
                     break;
                 default:
                     button.Content = text;
-                    if (gameBoard.Turn == 0)
-                        button.Background = Brushes.Red;
-                    else if (gameBoard.Turn == 1)
-                        button.Background = Brushes.Blue;
+                    //if (gameBoard.Turn == 0)
+                    //    button.Background = Brushes.Red;
+                    //else if (gameBoard.Turn == 1)
+                    //    button.Background = Brushes.Blue;
+                    button.Background = Brushes.Gold;
                     break;
             }
         }
@@ -349,7 +347,6 @@ namespace MultiplayerGame
             new PlayerHUD(this.canvas, players[1], 1);
 
             canvas.Children.Add(this.gameBoard);
-            //gameWindow.Content = this.gameBoard;
             gameWindow.Content = this.canvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
@@ -422,6 +419,17 @@ namespace MultiplayerGame
             Label playerLabel01 = new Label();
             if (id == 0)
             {
+                Rectangle rec = new Rectangle()
+                {
+                    Width = canvas.Width/2,
+                    Height = 100,
+                    Fill = Brushes.Red,
+                    Stroke = Brushes.PaleGoldenrod,
+                    StrokeThickness = 2,
+                };
+
+                canvas.Children.Add(rec);
+
                 playerLabel01.Content = "Player01";
                 playerLabel01.SetValue(Canvas.LeftProperty, 20.0);
                 playerLabel01.SetValue(Canvas.TopProperty, 20.0);
@@ -435,6 +443,16 @@ namespace MultiplayerGame
             }
             else
             {
+                Rectangle rec = new Rectangle()
+                {
+                    Width = canvas.Width / 2,
+                    Height = 100,
+                    Fill = Brushes.Blue,
+                    //Stroke = Brushes.PaleGoldenrod,
+                    StrokeThickness = 2,
+                };
+                rec.SetValue(Canvas.RightProperty, 0.0);
+                canvas.Children.Add(rec);
                 playerLabel01.Content = "Player02";
                 playerLabel01.SetValue(Canvas.RightProperty, 20.0);
                 playerLabel01.SetValue(Canvas.TopProperty, 20.0);
