@@ -43,6 +43,7 @@ namespace MultiplayerGame
             button.Click += OnLeftClickTile;
             button.MouseDoubleClick += OnDoubleClick;
             button.MouseRightButtonDown += OnRightClickTile;
+            button.Background = Brushes.SkyBlue;
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
@@ -78,73 +79,77 @@ namespace MultiplayerGame
 
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
-            if (Test())
-            {
+            if (isFinish)
+                return;
+            if (!CheckHasObject())
                 gameBoard.SwitchPlayerTurn();
-            }
         }
 
-        public bool Test()
+        public bool CheckHasObject()
         {
+            if (isFinish)
+                return false;
+            else
             {
-                if (!isFinish)
+                this.isFinish = true;
+                if (this.hasMine)
                 {
-                    this.isFinish = true;
-                    if (hasMine)
+                    //Fire Event -- Score , change image, return true;
+                    //gameBoard.Players[gameBoard.Turn].Score++;
+                    //button.Content = new Image() { Source = gameBoard.MineImage };
+                    //gameBoard.RaiseEvent(new GameboardEventArgs());
+                    CollectObject();
+                    return true;
+                }
+                else
+                {
+                    List<int> numbers = GetNeighbourIndecies(this.id);
+                    int count = CountObjFromGroup(numbers);
+                    if (count == 0)
                     {
-                        gameBoard.Players[gameBoard.Turn].Score++;
-                        button.Content = new Image() { Source = gameBoard.MineImage };
-                        return false;
+                        InvokeGroupOfTile(numbers);
                     }
                     else
                     {
-                        List<int> numbers = AllNeighbourNumber(this.id);
-                        int count = 0;
-
-                        foreach (int i in numbers)
-                        {
-                            Tile temp = gameBoard.Tiles[i];
-                            if (temp.hasMine)
-                                count++;
-                        }
-                        if (count == 0) //if no mine is around, automatically check all the neighbours.
-                        {
-                            this.button.IsEnabled = false;
-                            foreach (int i in numbers)
-                            {
-                                Tile temp = gameBoard.Tiles[i];
-                                temp.Test();
-                            }
-                        }
-                        else
-                        {
-                            SetTileImage(count.ToString());
-                            return true;
-                        }
+                        SetTileImage(count.ToString());
+                        return false;
                     }
                 }
-                else
-                    return true;
             }
-            return true;
+            return false;
         }
 
-        private void SweepMine()
+        public void CollectObject()
         {
+            //Fire Event -- Score , change image, return true;
+            gameBoard.Players[gameBoard.Turn].Score++;
+            button.Content = new Image() { Source = gameBoard.MineImage };
+        }
 
-            this.button.MouseRightButtonDown -= OnRightClickTile;
-            int count = CountNearMine();
-            if (count != 0)
+        public void InvokeGroupOfTile(List<int> numbers)
+        {
+            this.button.IsEnabled = false;
+            foreach (int i in numbers)
             {
-                SetTileImage(count.ToString());
-            }
-            else
-            {
-                this.button.IsEnabled = false;
+                Tile temp = gameBoard.Tiles[i];
+                temp.CheckHasObject();
             }
         }
 
-        List<int> AllNeighbourNumber(int i)
+        public int CountObjFromGroup(List<int> numbers)
+        {
+            int count = 0;
+
+            foreach (int i in numbers)  //Count number of mine
+            {
+                Tile temp = gameBoard.Tiles[i];
+                if (temp.hasMine)
+                    count++;
+            }
+            return count;
+        }
+
+        List<int> GetNeighbourIndecies(int i)
         {
             int x = i % this.gameBoard.Column;
             int y = i / this.gameBoard.Column;
@@ -173,7 +178,7 @@ namespace MultiplayerGame
 
         private int CountNearMine()
         {
-            List<int> numbers = AllNeighbourNumber(this.id);
+            List<int> numbers = GetNeighbourIndecies(this.id);
             int count = 0;
 
             foreach (int i in numbers)
@@ -221,10 +226,6 @@ namespace MultiplayerGame
                     break;
                 default:
                     button.Content = text;
-                    //if (gameBoard.Turn == 0)
-                    //    button.Background = Brushes.Red;
-                    //else if (gameBoard.Turn == 1)
-                    //    button.Background = Brushes.Blue;
                     button.Background = Brushes.Gold;
                     break;
             }
@@ -263,9 +264,11 @@ namespace MultiplayerGame
         int column;
         int mine;
         int finishCount;
-        int turn;
+        int turn = 0;
+        double topPadding = 100;
+        float blockSize;
         List<Player> players;
-        Canvas canvas;
+        Canvas gameCanvas;
 
         public BitmapImage FlagImage { get { return flagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
@@ -275,6 +278,8 @@ namespace MultiplayerGame
         public int Column { get { return column; } set { column = value; } }
         public int Turn { get { return turn; } set { turn = value; } }
         public List<Player> Players { get { return players; } }
+        public double TopPadding { get { return topPadding; } }
+        public Canvas GameCanvas { get { return gameCanvas; } }
         public int FinishCount
         {
             get { return finishCount; }
@@ -301,15 +306,15 @@ namespace MultiplayerGame
 
         public void Initialize()
         {
-            canvas = new Canvas();
-            double topPadding = 100.0f;
+            gameCanvas = new Canvas();
             tiles = new List<Tile>();
             gameBoard = new Grid();
-            float blockSize = 50 - row;
+            blockSize = 50 - row;
             finishCount = 0;
+            turn = -1;
 
-            canvas.Width = column * blockSize;
-            canvas.Height = row * blockSize + topPadding;
+            gameCanvas.Width = column * blockSize;
+            gameCanvas.Height = row * blockSize + topPadding;
 
             // Create the Grid
             gameBoard = new Grid();
@@ -340,15 +345,14 @@ namespace MultiplayerGame
             SetMine(RandomNumber(mine), tiles);
 
             players = new List<Player>();
-            players.Add(new Player(0));
-            players.Add(new Player(1));
+            players.Add(new Player(0, this));
+            players.Add(new Player(1, this));
 
-            new PlayerHUD(this.canvas, players[0], 0);
-            new PlayerHUD(this.canvas, players[1], 1);
-
-            canvas.Children.Add(this.gameBoard);
-            gameWindow.Content = this.canvas;
+            gameCanvas.Children.Add(this.gameBoard);
+            gameWindow.Content = this.gameCanvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+
+            SwitchPlayerTurn();
         }
 
         public List<int> RandomNumber(int num_of_mine)
@@ -380,8 +384,6 @@ namespace MultiplayerGame
 
         public void Gameover()
         {
-            //ShowAllMine();
-            
             MessageBoxResult result = MessageBox.Show("Player" + turn + ": " + players[turn].Score.ToString(), "Gameover!");
             if (turn == 0)
                 turn = 1;
@@ -394,79 +396,113 @@ namespace MultiplayerGame
         public void SwitchPlayerTurn()
         {
             if (turn == 0)
+            {
+                players[turn].PlayerHUDs.RemoveBorder();
                 turn = 1;
+                players[turn].PlayerHUDs.AddBorder();
+            }
             else if (turn == 1)
+            {
+                players[turn].PlayerHUDs.RemoveBorder();
                 turn = 0;
+                players[turn].PlayerHUDs.AddBorder();
+            }
+            else
+            {
+                turn = 0;
+                players[turn].PlayerHUDs.AddBorder();
+            }
         }
     }
 
     public class PlayerHUD
     {
-        Canvas canvas;
+        Board gameBoard;
         Player player;
         Label scoreLabel;
+        Label nameLabel;
+        Image turnFlag;
+        Rectangle background;
         int id;
 
-        public PlayerHUD(Canvas canvas, Player player, int id)
+        public PlayerHUD(Board gameBoard, Player player)
         {
-            this.canvas = canvas;
             this.player = player;
-            this.id = id;
+            this.id = player.Id;
+            this.gameBoard = gameBoard;
             Initialize();
         }
         public virtual void Initialize()
         {
-            Label playerLabel01 = new Label();
+            CreateBackground(Brushes.Red);
+            CreateNameLabel("Player" + id.ToString());
+            CreateScoreLabel();
+            player.PlayerHUDs = this;
+        }
+
+        public void CreateNameLabel(string name)
+        {
+            nameLabel = new Label();
+            nameLabel.Content = name;
+            if(id == 0)
+                nameLabel.SetValue(Canvas.LeftProperty, 20.0);
+            else
+            nameLabel.SetValue(Canvas.RightProperty, 20.0);
+            nameLabel.SetValue(Canvas.TopProperty, 0.0);
+            nameLabel.FontSize = 30;
+            gameBoard.GameCanvas.Children.Add(nameLabel);
+        }
+
+        public void CreateScoreLabel()
+        {
+            scoreLabel = new Label();
+            scoreLabel.Content = player.Score;
+            if (id == 0)
+                scoreLabel.SetValue(Canvas.LeftProperty, 20.0);
+            else
+                scoreLabel.SetValue(Canvas.RightProperty, 20.0);
+            scoreLabel.SetValue(Canvas.TopProperty, 50.0);
+            scoreLabel.FontSize = 26;
+            gameBoard.GameCanvas.Children.Add(scoreLabel);
+        }
+
+        public void CreateBackground(SolidColorBrush colour)
+        {
+            background = new Rectangle()
+            {
+                Width = gameBoard.GameCanvas.Width / 2,
+                Height = gameBoard.TopPadding,
+                StrokeThickness = 5,
+            };
             if (id == 0)
             {
-                Rectangle rec = new Rectangle()
-                {
-                    Width = canvas.Width/2,
-                    Height = 100,
-                    Fill = Brushes.Red,
-                    Stroke = Brushes.PaleGoldenrod,
-                    StrokeThickness = 2,
-                };
-
-                canvas.Children.Add(rec);
-
-                playerLabel01.Content = "Player01";
-                playerLabel01.SetValue(Canvas.LeftProperty, 20.0);
-                playerLabel01.SetValue(Canvas.TopProperty, 20.0);
-                canvas.Children.Add(playerLabel01);
-
-                scoreLabel = new Label();
-                scoreLabel.Content = player.Score;
-                scoreLabel.SetValue(Canvas.LeftProperty, 20.0);
-                scoreLabel.SetValue(Canvas.TopProperty, 70.0);
-                canvas.Children.Add(scoreLabel);
+                background.Fill = Brushes.Red;
             }
             else
             {
-                Rectangle rec = new Rectangle()
-                {
-                    Width = canvas.Width / 2,
-                    Height = 100,
-                    Fill = Brushes.Blue,
-                    //Stroke = Brushes.PaleGoldenrod,
-                    StrokeThickness = 2,
-                };
-                rec.SetValue(Canvas.RightProperty, 0.0);
-                canvas.Children.Add(rec);
-                playerLabel01.Content = "Player02";
-                playerLabel01.SetValue(Canvas.RightProperty, 20.0);
-                playerLabel01.SetValue(Canvas.TopProperty, 20.0);
-                canvas.Children.Add(playerLabel01);
+                background.Fill = Brushes.Blue;
 
-                scoreLabel = new Label();
-                scoreLabel.Content = player.Score;
-                scoreLabel.SetValue(Canvas.RightProperty, 20.0);
-                scoreLabel.SetValue(Canvas.TopProperty, 70.0);
-                canvas.Children.Add(scoreLabel);
+                background.SetValue(Canvas.RightProperty, 0.0);
             }
+            gameBoard.GameCanvas.Children.Add(background);
+        }
 
+        public void CreateTurnFlag()
+        {
+            turnFlag = new Image() { Source = gameBoard.FlagImage };
+            turnFlag.SetValue(Canvas.LeftProperty, gameBoard.GameCanvas.Width / 2 - 40);
+            turnFlag.SetValue(Canvas.TopProperty, gameBoard.TopPadding/2);
+            gameBoard.GameCanvas.Children.Add(turnFlag);
+        }
 
-            player.PlayerHUDs = this;
+        public void AddBorder()
+        {
+            background.Stroke = Brushes.GreenYellow;
+        }
+
+        public void RemoveBorder()
+        {
+            background.Stroke = null;
         }
 
         public void UpdateScore(int score)
@@ -546,12 +582,8 @@ namespace MultiplayerGame
         int score;
         int id;
         PlayerHUD playerHUDs;
-        public PlayerHUD PlayerHUDs
-        {
-            get { return playerHUDs; }
-            set { playerHUDs = value; }
-        }
-
+        Board gameBoard;
+        public PlayerHUD PlayerHUDs { get { return playerHUDs; } set { playerHUDs = value; }}
 
         public int Score
         {
@@ -564,6 +596,16 @@ namespace MultiplayerGame
         }
         public int Id { get { return id; } }
 
-        public Player(int id) { this.id = id; }
+        public Player(int id, Board gameboard)
+        {
+            this.id = id;
+            this.gameBoard = gameboard;
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            playerHUDs = new PlayerHUD(gameBoard, this);
+        }
     }
 }
