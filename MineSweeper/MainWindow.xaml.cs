@@ -45,7 +45,8 @@ namespace MineSweeper
 
         private void OnGameover(object sender, EventArgs e)
         {
-            InitializeMenu();
+            //InitializeMenu();
+            MessageBox.Show("ASDSA");
         }
 
         private void OnStartButtonClick(object sender, RoutedEventArgs e)

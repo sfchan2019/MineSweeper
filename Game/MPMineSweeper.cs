@@ -124,6 +124,9 @@ namespace MultiplayerGame
             //Fire Event -- Score , change image, return true;
             gameBoard.Players[gameBoard.Turn].Score++;
             button.Content = new Image() { Source = gameBoard.MineImage };
+            gameBoard.Mine--;
+            if(gameBoard.Mine <= 0)
+                gameBoard.RaiseEvent(new GameboardEventArgs());
         }
 
         public void InvokeGroupOfTile(List<int> numbers)
@@ -275,6 +278,7 @@ namespace MultiplayerGame
         public List<Tile> Tiles { get { return tiles; } }
         public Grid GameBoard { get { return gameBoard; } }
         public int Row { get { return row; } set { row = value; } }
+        public int Mine { get { return mine; } set { mine = value; } }
         public int Column { get { return column; } set { column = value; } }
         public int Turn { get { return turn; } set { turn = value; } }
         public List<Player> Players { get { return players; } }
@@ -355,19 +359,18 @@ namespace MultiplayerGame
             SwitchPlayerTurn();
         }
 
-        public List<int> RandomNumber(int num_of_mine)
+        public HashSet<int> RandomNumber(int num_of_mine)
         {
-            List<int> numbers = new List<int>();
+            HashSet<int> numbers = new HashSet<int>();
             Random random = new Random();
-            for (int i = 0; i < num_of_mine; i++)
+            while (numbers.Count < num_of_mine)
             {
-                int rand = random.Next(0, (row * column) - 1);
-                numbers.Add(rand);
+                numbers.Add(random.Next(0, (row * column) - 1));
             }
             return numbers;
         }
 
-        public void SetMine(List<int> numbers, List<Tile> tiles)
+        public void SetMine(HashSet<int> numbers, List<Tile> tiles)
         {
             foreach (int i in numbers)
                 tiles[i].SetMine(true);
