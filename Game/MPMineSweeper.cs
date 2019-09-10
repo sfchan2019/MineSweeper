@@ -50,15 +50,15 @@ namespace MultiplayerGame
 
         public void OnRightClickTile(object sender, RoutedEventArgs e)
         {
-            FlagTile();
+            //FlagTile();
         }
 
         public void OnDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (IsFinish)
-                return;
-            if(e.ChangedButton == MouseButton.Left)
-            InvokeNeighbourTiles(AllNeighbourNumber(this.id));
+            //if (IsFinish)
+            //    return;
+            //if(e.ChangedButton == MouseButton.Left)
+            //InvokeNeighbourTiles(AllNeighbourNumber(this.id));
         }
 
         public void FlagTile()
@@ -78,21 +78,58 @@ namespace MultiplayerGame
 
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
-            if (isFinish)
-                return;
-            this.isFinish = true;
-            gameBoard.FinishCount++;
-            if (hasMine)
+            if (Test())
             {
-                //gameBoard.Gameover();
-                gameBoard.Players[gameBoard.Turn].Score++;
-                button.Content = new Image() { Source = gameBoard.MineImage };
+                gameBoard.SwitchPlayerTurn();
             }
-            else
+        }
+
+        public bool Test()
+        {
+            do
             {
-                SweepMine();
-                //gameBoard.SwitchPlayerTurn();
+                if (!isFinish)
+                {
+                    this.isFinish = true;
+                    if (hasMine)
+                    {
+                        gameBoard.Players[gameBoard.Turn].Score++;
+                        button.Content = new Image() { Source = gameBoard.MineImage };
+                        return false;
+                    }
+                    else
+                    {
+                        List<int> numbers = AllNeighbourNumber(this.id);
+                        int count = 0;
+
+                        foreach (int i in numbers)
+                        {
+                            Tile temp = gameBoard.Tiles[i];
+                            if (temp.hasMine)
+                                count++;
+                        }
+                        if (count == 0) //if no mine is around, automatically check all the neighbours.
+                        {
+                            this.button.IsEnabled = false;
+                            foreach (int i in numbers)
+                            {
+                                Tile temp = gameBoard.Tiles[i];
+                                //temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                                temp.Test();
+                            }
+                        }
+                        else
+                        {
+                            SetTileImage(count.ToString());
+                            break;
+                        }
+                    }
+                }
+                else
+                    break;
             }
+            while (true);
+            return true;
         }
 
         private void SweepMine()
@@ -148,8 +185,8 @@ namespace MultiplayerGame
                 if (temp.hasMine)
                     count++;
             }
-            if (count == 0) //if no mine is around, automatically check all the neighbours.
-                InvokeNeighbourTiles(numbers);
+            //if (count == 0) //if no mine is around, automatically check all the neighbours.
+            //    InvokeNeighbourTiles(numbers);
             return count;
         }
 

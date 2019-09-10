@@ -103,9 +103,9 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Game\Game.csproj">
+    <ProjectReference Include="..\Game\MultiPlayer.csproj">
       <Project>{57e1b2f9-e6f3-4ff3-9cb0-f05e408e4d76}</Project>
-      <Name>Game</Name>
+      <Name>MultiPlayer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
