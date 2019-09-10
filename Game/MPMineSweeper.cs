@@ -209,7 +209,6 @@ namespace MultiplayerGame
         int row;
         int column;
         int mine;
-        int finishCount;
         int turn = 0;
         double topPadding = 100;
         float blockSize;
@@ -228,16 +227,6 @@ namespace MultiplayerGame
         public List<Player> Players { get { return players; } }
         public double TopPadding { get { return topPadding; } }
         public Canvas GameCanvas { get { return gameCanvas; } }
-        public int FinishCount
-        {
-            get { return finishCount; }
-            set
-            {
-                finishCount = value;
-                if (finishCount == tiles.Count)
-                    MessageBox.Show("Win");
-            }
-        } 
 
         public Board(int row, int column, int mine, Window window)
         {
@@ -250,7 +239,6 @@ namespace MultiplayerGame
             redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
             blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
 
-
             Initialize();
         }
 
@@ -260,7 +248,6 @@ namespace MultiplayerGame
             tiles = new List<Tile>();
             gameBoard = new Grid();
             blockSize = 50 - row;
-            finishCount = 0;
             turn = -1;
 
             gameCanvas.Width = column * blockSize;
@@ -301,6 +288,24 @@ namespace MultiplayerGame
             gameCanvas.Children.Add(this.gameBoard);
             gameWindow.Content = this.gameCanvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+
+            Rectangle background = new Rectangle()
+            {
+                Width = gameCanvas.Width / 6,
+                Height = topPadding,
+                Fill = Brushes.Wheat,
+                StrokeThickness = 2,
+                Stroke = Brushes.Yellow,
+            };
+            background.SetValue(Canvas.LeftProperty, gameCanvas.Width / 2 - background.Width/2);
+            gameCanvas.Children.Add(background);
+
+
+            Label endCondition = new Label();
+            endCondition.Content = mine / 2;
+            endCondition.FontSize = 35;
+            endCondition.SetValue(Canvas.LeftProperty, gameCanvas.Width / 2 - endCondition.FontSize/2);
+            gameCanvas.Children.Add(endCondition);
 
             SwitchPlayerTurn();
         }
@@ -349,7 +354,6 @@ namespace MultiplayerGame
         Player player;
         Label scoreLabel;
         Label nameLabel;
-        Image turnFlag;
         Rectangle background;
         int id;
 
@@ -398,7 +402,7 @@ namespace MultiplayerGame
         {
             background = new Rectangle()
             {
-                Width = gameBoard.GameCanvas.Width / 2,
+                Width = gameBoard.GameCanvas.Width / 2 - (45),
                 Height = gameBoard.TopPadding,
                 StrokeThickness = 5,
             };
@@ -415,14 +419,6 @@ namespace MultiplayerGame
             gameBoard.GameCanvas.Children.Add(background);
         }
 
-        public void CreateTurnFlag()
-        {
-            turnFlag = new Image() { Source = gameBoard.RedFlagImage };
-            turnFlag.SetValue(Canvas.LeftProperty, gameBoard.GameCanvas.Width / 2 - 40);
-            turnFlag.SetValue(Canvas.TopProperty, gameBoard.TopPadding/2);
-            gameBoard.GameCanvas.Children.Add(turnFlag);
-        }
-
         public void AddBorder()
         {
             background.Stroke = Brushes.GreenYellow;
@@ -436,72 +432,6 @@ namespace MultiplayerGame
         public void UpdateScore(int score)
         {
             scoreLabel.Content = score.ToString();
-        }
-    }
-
-    public class Menu
-    {
-        Canvas canvas;
-        ComboBox levelOption;
-        ComboBoxItem easy;
-        ComboBoxItem normal;
-        ComboBoxItem difficult;
-        Button startButton;
-        Window gameWindow;
-        ImageBrush imageBrush;
-
-        public Button StartButton { get { return startButton; } }
-        public ComboBox LevelOption { get { return levelOption; } }
-
-        public Menu(Window window)
-        {
-            gameWindow = window;
-            imageBrush = new ImageBrush();
-            imageBrush.ImageSource = new BitmapImage(new Uri("Resources/background.bmp", UriKind.Relative));
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            canvas = new Canvas();
-            canvas.Height = 250;
-            canvas.Width = 250;
-            canvas.HorizontalAlignment = HorizontalAlignment.Stretch;
-            canvas.VerticalAlignment = VerticalAlignment.Stretch;
-            canvas.Background = imageBrush;
-
-            levelOption = new ComboBox();
-            levelOption.Height = 22;
-            levelOption.Width = 75;
-            levelOption.HorizontalAlignment = HorizontalAlignment.Center;
-            levelOption.VerticalAlignment = VerticalAlignment.Center;
-            levelOption.SetValue(Canvas.TopProperty, (double)150);
-            levelOption.SetValue(Canvas.LeftProperty, (double)80);
-
-            easy = new ComboBoxItem();
-            easy.Content = "Easy";
-            levelOption.Items.Add(easy);
-
-            normal = new ComboBoxItem();
-            normal.Content = "Normal";
-            levelOption.Items.Add(normal);
-
-            difficult = new ComboBoxItem();
-            difficult.Content = "Difficult";
-            difficult.IsSelected = true;
-            levelOption.Items.Add(difficult);
-
-            canvas.Children.Add(levelOption);
-
-            startButton = new Button();
-            startButton.Width = 75;
-            startButton.Content = "Start";
-            startButton.SetValue(Canvas.TopProperty, (double)180);
-            startButton.SetValue(Canvas.LeftProperty, (double)80);
-            canvas.Children.Add(startButton);
-
-            gameWindow.Content = this.canvas;
-            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
     }
 

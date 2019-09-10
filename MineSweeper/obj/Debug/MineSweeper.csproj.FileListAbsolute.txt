@@ -30,3 +30,7 @@ C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\Min
 C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\Game.dll
 C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\Game.pdb
 C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\obj\Debug\MineSweeper.csproj.CopyComplete
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\UserInterface.dll
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\UserInterface.pdb
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\SinglePlayer.dll
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\SinglePlayer.pdb

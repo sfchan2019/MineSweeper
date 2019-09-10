@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiPlayer", "Game\MultiPl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SinglePlayer", "SinglePlayer\SinglePlayer.csproj", "{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{26008A61-A6EE-4822-BA07-FE60B3934ECA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

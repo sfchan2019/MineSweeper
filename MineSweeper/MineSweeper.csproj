@@ -107,6 +107,14 @@
       <Project>{57e1b2f9-e6f3-4ff3-9cb0-f05e408e4d76}</Project>
       <Name>MultiPlayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SinglePlayer\SinglePlayer.csproj">
+      <Project>{48b6fd2e-2585-40a8-b2dd-9f30bf9c7c55}</Project>
+      <Name>SinglePlayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserInterface\UserInterface.csproj">
+      <Project>{26008a61-a6ee-4822-ba07-fe60b3934eca}</Project>
+      <Name>UserInterface</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\background.bmp">

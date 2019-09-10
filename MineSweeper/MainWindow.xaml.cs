@@ -14,8 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using MultiplayerGame;
-
-
+using UserInterface;
 
 namespace MineSweeper
 {
@@ -26,7 +25,8 @@ namespace MineSweeper
     public partial class MainWindow : Window
     {
         MultiplayerGame.Board board;
-        MultiplayerGame.Menu menu;
+        //SinglePlayerGame.Board 
+        UserInterface.Menu menu;
         
         public MainWindow()
         {
@@ -35,10 +35,10 @@ namespace MineSweeper
         }
         public void InitializeMenu()
         {
-            menu = new MultiplayerGame.Menu(this);
+            menu = new UserInterface.Menu(this);
             menu.StartButton.Click += OnStartButtonClick;
         }
-        public void InitializeGame(int row, int column, int mine)
+        public void InitializeMultiplayerGame(int row, int column, int mine)
         {
             board = new MultiplayerGame.Board(row, column, mine, this);
             board.GameboardEvent += OnGameover;
@@ -57,14 +57,22 @@ namespace MineSweeper
         {
             switch (menu.LevelOption.SelectedIndex)
             {
-                case 0: //Easy                 
-                    InitializeGame(6, 6, 7);  //number of row, column and mine
+                //case 0: //Easy                 
+                //    //InitializeMultiplayerGame(6, 6, 7);  //number of row, column and mine
+                //    break;
+                //case 1: //Normal
+                //    //InitializeMultiplayerGame(16, 16, 50);
+                //    break;
+                //case 2: //Difficult
+                //    //InitializeMultiplayerGame(25, 25, 100);
+                //    break;
+                case 0:
+                    InitializeMultiplayerGame(8, 8, 10);
                     break;
-                case 1: //Normal
-                    InitializeGame(16, 16, 50);
+                case 1:
+                    InitializeMultiplayerGame(16, 16, 50);
                     break;
-                case 2: //Difficult
-                    InitializeGame(25, 25, 100);
+                default:
                     break;
             }
         }
