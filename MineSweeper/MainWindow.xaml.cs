@@ -48,7 +48,8 @@ namespace MineSweeper
         {
             if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
                 return;
-            MessageBox.Show("Player0 wins!");
+            Board gameBoard = sender as Board;
+            MessageBox.Show("Player" + (gameBoard.Turn+1).ToString() + " wins!", "Congratulations!");
             InitializeMenu();
         }
 

@@ -56,7 +56,6 @@ namespace MultiplayerGame
             System.Windows.Controls.Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
             GameEventHandler += OnCollectObject;
-            //gameBoard.GameboardEvent += OnCollectObject;
         }
 
         public void OnRightClickTile(object sender, RoutedEventArgs e)
@@ -175,15 +174,11 @@ namespace MultiplayerGame
         {
             switch (text)
             {
-                case "M":   //Mine
-                    button.Content = new Image() { Source = gameBoard.MineImage };
-                    break;
                 case "F":   //Flag
-                    button.Content = new Image() { Source = gameBoard.FlagImage };
-                    break;
-                case "U":   //Unflag
-                    button.Content = "";
-                    button.Background = Brushes.LightGray;
+                    if (gameBoard.Turn == 0)
+                        button.Content = new Image() { Source = gameBoard.RedFlagImage };
+                    else if (gameBoard.Turn == 1)
+                        button.Content = new Image() { Source = gameBoard.BlueFlagImage };
                     break;
                 default:
                     button.Content = text;
@@ -223,7 +218,8 @@ namespace MultiplayerGame
         }
 
         BitmapImage mineImage;
-        BitmapImage flagImage;
+        BitmapImage redFlagImage;
+        BitmapImage blueFlagImage;
         Window gameWindow;
         List<Tile> tiles;
         Grid gameBoard;
@@ -237,7 +233,8 @@ namespace MultiplayerGame
         List<Player> players;
         Canvas gameCanvas;
 
-        public BitmapImage FlagImage { get { return flagImage; } }
+        public BitmapImage RedFlagImage { get { return redFlagImage; } }
+        public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
         public List<Tile> Tiles { get { return tiles; } }
         public Grid GameBoard { get { return gameBoard; } }
@@ -267,7 +264,9 @@ namespace MultiplayerGame
             this.mine = mine;
 
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
-            flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
+            redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
+            blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
+
 
             Initialize();
         }
@@ -381,7 +380,7 @@ namespace MultiplayerGame
         public virtual void Initialize()
         {
             CreateBackground(Brushes.Red);
-            CreateNameLabel("Player" + id.ToString());
+            CreateNameLabel("Player" + (id+1).ToString());
             CreateScoreLabel();
             player.PlayerHUDs = this;
         }
@@ -435,7 +434,7 @@ namespace MultiplayerGame
 
         public void CreateTurnFlag()
         {
-            turnFlag = new Image() { Source = gameBoard.FlagImage };
+            turnFlag = new Image() { Source = gameBoard.RedFlagImage };
             turnFlag.SetValue(Canvas.LeftProperty, gameBoard.GameCanvas.Width / 2 - 40);
             turnFlag.SetValue(Canvas.TopProperty, gameBoard.TopPadding/2);
             gameBoard.GameCanvas.Children.Add(turnFlag);
