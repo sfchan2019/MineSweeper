@@ -49,28 +49,12 @@ namespace MultiplayerGame
             button = new Button();
             hasMine = false;
             button.Click += OnLeftClickTile;
-            button.MouseDoubleClick += OnDoubleClick;
-            button.MouseRightButtonDown += OnRightClickTile;
             button.Background = Brushes.SkyBlue;
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
             GameEventHandler += OnCollectObject;
         }
-
-        public void OnRightClickTile(object sender, RoutedEventArgs e)
-        {
-            //FlagTile();
-        }
-
-        public void OnDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //if (IsFinish)
-            //    return;
-            //if(e.ChangedButton == MouseButton.Left)
-            //InvokeNeighbourTiles(AllNeighbourNumber(this.id));
-        }
-
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
             if (isFinish)
@@ -88,7 +72,6 @@ namespace MultiplayerGame
                 this.isFinish = true;
                 if (this.hasMine)
                 {
-                    //CollectObject();
                     this.RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
                     return true;
                 }
