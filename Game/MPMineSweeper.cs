@@ -20,6 +20,14 @@ namespace MultiplayerGame
 {
     public class Tile
     {
+        public delegate void GameEvent(Object sender, GameboardEventArgs e);
+        public GameEvent GameEventHandler;
+        public void RaiseEvent(GameboardEventArgs e)
+        {
+            if (GameEventHandler != null)
+                GameEventHandler(this, e);
+        }
+
         System.Windows.Controls.Button button;
         Board gameBoard;
         int row;
@@ -47,6 +55,8 @@ namespace MultiplayerGame
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
             gameBoard.GameBoard.Children.Add(button);
+            GameEventHandler += OnCollectObject;
+            //gameBoard.GameboardEvent += OnCollectObject;
         }
 
         public void OnRightClickTile(object sender, RoutedEventArgs e)
@@ -60,21 +70,6 @@ namespace MultiplayerGame
             //    return;
             //if(e.ChangedButton == MouseButton.Left)
             //InvokeNeighbourTiles(AllNeighbourNumber(this.id));
-        }
-
-        public void FlagTile()
-        {
-            if (!isFinish)
-            {
-                SetTileImage("F");
-                gameBoard.FinishCount++;
-            }
-            else
-            {
-                SetTileImage("U");
-                gameBoard.FinishCount--;
-            }
-            isFinish = !isFinish;
         }
 
         public void OnLeftClickTile(object sender, RoutedEventArgs e)
@@ -94,11 +89,8 @@ namespace MultiplayerGame
                 this.isFinish = true;
                 if (this.hasMine)
                 {
-                    //Fire Event -- Score , change image, return true;
-                    //gameBoard.Players[gameBoard.Turn].Score++;
-                    //button.Content = new Image() { Source = gameBoard.MineImage };
-                    //gameBoard.RaiseEvent(new GameboardEventArgs());
-                    CollectObject();
+                    //CollectObject();
+                    this.RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
                     return true;
                 }
                 else
@@ -119,14 +111,14 @@ namespace MultiplayerGame
             return false;
         }
 
-        public void CollectObject()
+        public void OnCollectObject(Object sender, GameboardEventArgs e)
         {
-            //Fire Event -- Score , change image, return true;
+            if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
+                return;
             gameBoard.Players[gameBoard.Turn].Score++;
-            button.Content = new Image() { Source = gameBoard.MineImage };
-            gameBoard.Mine--;
-            if(gameBoard.Mine <= 0)
-                gameBoard.RaiseEvent(new GameboardEventArgs());
+            SetTileImage("F");
+            if(gameBoard.Players[gameBoard.Turn].Score > gameBoard.Mine/2)
+                gameBoard.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
         }
 
         public void InvokeGroupOfTile(List<int> numbers)
@@ -179,40 +171,6 @@ namespace MultiplayerGame
             return numbers;
         }
 
-        private int CountNearMine()
-        {
-            List<int> numbers = GetNeighbourIndecies(this.id);
-            int count = 0;
-
-            foreach (int i in numbers)
-            {
-                Tile temp = gameBoard.Tiles[i];
-                if (temp.hasMine)
-                    count++;
-            }
-            //if (count == 0) //if no mine is around, automatically check all the neighbours.
-            //    InvokeNeighbourTiles(numbers);
-            return count;
-        }
-
-        private void InvokeNeighbourTiles(List<int> numbers)
-        {
-            foreach (int i in numbers)
-            {
-                Tile temp = gameBoard.Tiles[i];
-                if (temp.hasMine && !temp.isFinish)
-                {
-                    temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                    return;
-                }
-            }
-            foreach (int i in numbers)
-            {
-                Tile temp = gameBoard.Tiles[i];
-                temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            }
-        }
-
         public void SetTileImage(string text)
         {
             switch (text)
@@ -239,12 +197,18 @@ namespace MultiplayerGame
             this.hasMine = mine;
         }
     }
+    public enum GAME_EVENT
+    {
+        COLLECT_OBJECT, GAMEOVER,
+    }
 
     public class GameboardEventArgs : EventArgs
     {
-        public GameboardEventArgs()
+        private GAME_EVENT gameboardEvent;
+        public GAME_EVENT GameboardEvent { get { return gameboardEvent; } }
+        public GameboardEventArgs(GAME_EVENT e)
         {
-
+            gameboardEvent = e;
         }
     }
 
@@ -375,27 +339,6 @@ namespace MultiplayerGame
             foreach (int i in numbers)
                 tiles[i].SetMine(true);
         }
-
-        public void ShowAllMine()
-        {
-            foreach (Tile t in tiles)
-            {
-                if (t.HasMine && !t.IsFinish)
-                    t.SetTileImage("M");
-            }
-        }
-
-        public void Gameover()
-        {
-            MessageBoxResult result = MessageBox.Show("Player" + turn + ": " + players[turn].Score.ToString(), "Gameover!");
-            if (turn == 0)
-                turn = 1;
-            else if (turn == 1)
-                turn = 0;
-            //RaiseEvent(new RoutedEventArgs());
-            //RaiseEvent(new GameboardEventArgs());
-        }
-
         public void SwitchPlayerTurn()
         {
             if (turn == 0)

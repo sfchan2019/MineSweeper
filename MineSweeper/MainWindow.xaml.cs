@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using MultiplayerGame;
 
 
 
@@ -43,10 +44,12 @@ namespace MineSweeper
             board.GameboardEvent += OnGameover;
         }
 
-        private void OnGameover(object sender, EventArgs e)
+        private void OnGameover(object sender, GameboardEventArgs e)
         {
-            //InitializeMenu();
-            MessageBox.Show("ASDSA");
+            if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
+                return;
+            MessageBox.Show("Player0 wins!");
+            InitializeMenu();
         }
 
         private void OnStartButtonClick(object sender, RoutedEventArgs e)
@@ -57,7 +60,7 @@ namespace MineSweeper
                     InitializeGame(6, 6, 7);  //number of row, column and mine
                     break;
                 case 1: //Normal
-                    InitializeGame(25, 16, 60);
+                    InitializeGame(16, 16, 50);
                     break;
                 case 2: //Difficult
                     InitializeGame(25, 25, 100);
