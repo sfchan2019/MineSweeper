@@ -24,8 +24,8 @@ namespace MineSweeper
     
     public partial class MainWindow : Window
     {
-        Game.Board board;
-        Game.Menu menu;
+        MultiplayerGame.Board board;
+        MultiplayerGame.Menu menu;
         
         public MainWindow()
         {
@@ -34,12 +34,12 @@ namespace MineSweeper
         }
         public void InitializeMenu()
         {
-            menu = new Game.Menu(this);
+            menu = new MultiplayerGame.Menu(this);
             menu.StartButton.Click += OnStartButtonClick;
         }
         public void InitializeGame(int row, int column, int mine)
         {
-            board = new Game.Board(row, column, mine, this);
+            board = new MultiplayerGame.Board(row, column, mine, this);
             board.GameboardEvent += OnGameover;
         }
 

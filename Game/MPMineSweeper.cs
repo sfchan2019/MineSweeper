@@ -16,7 +16,7 @@ using System.IO;
 
 
 
-namespace Game
+namespace MultiplayerGame
 {
     public class Tile
     {
