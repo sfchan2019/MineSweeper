@@ -19,3 +19,23 @@ This repository was created to submit my Mine Sweeper game
 * Tile - hold most of the function for tile i.e. Check tile, change tile image etc.;
 * PlayerHUD - hold and display the player id and score;
 * Menu - Create the menu programmatically and transit between the game;
+
+## Day 2
+### General Implemetation
+* Created Turn-based multiplayer feature;
+* Player that flagged more than half of the mines win the game;
+* Seperated Menu to a new project as UI;
+* Seperated Single Player feature to a new project as Single Player Mine Sweeper;
+* Created HUD to show the score of the player and the win condition, but need to polish;
+* Took away the double click - Invoke surrounding tiles feature;
+* Changed the mine image to flag image, so bonus can be given to player if they spot a mine;
+* Created event handler for CollectObject (Finding the bome);
+
+### Things to do
+* Polish the UIs;
+* Need to seperate HUD class from Multiplayer project;
+* Need to initialize UI outside the Board class;
+* Expose some functions to MainWindow class so it can be modify by the user (May use event handler);
+
+### Things may need to do
+* Add single player feature back to the game;
