@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using MineSweeperInterface;
 
 
 
@@ -203,7 +204,7 @@ namespace SinglePlayerGame
         }
     }
 
-    public class Board
+    public class Board:IMineSweeperGame
     {
         public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
         public event GameboardEventHandler GameboardEvent;

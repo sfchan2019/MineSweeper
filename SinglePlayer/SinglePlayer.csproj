@@ -48,5 +48,11 @@
     <Compile Include="SPMineSweeper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MineSweeperInterface\MineSweeperInterface.csproj">
+      <Project>{910315ff-849f-4985-84dd-b3d80b080f53}</Project>
+      <Name>MineSweeperInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

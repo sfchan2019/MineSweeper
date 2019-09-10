@@ -13,8 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
-
-
+using UserInterface;
+using MineSweeperInterface;
 
 namespace MultiplayerGame
 {
@@ -98,6 +98,7 @@ namespace MultiplayerGame
             if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
                 return;
             gameBoard.Players[gameBoard.Turn].Score++;
+            gameBoard.TopBannerHUD.UpdateScore(gameBoard.Turn, gameBoard.Players[gameBoard.Turn].Score);
             SetTileImage("F");
             if(gameBoard.Players[gameBoard.Turn].Score > gameBoard.Mine/2)
                 gameBoard.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
@@ -190,7 +191,7 @@ namespace MultiplayerGame
         }
     }
 
-    public class Board
+    public class Board: IMineSweeperGame
     {
         public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
         public event GameboardEventHandler GameboardEvent;    
@@ -214,6 +215,7 @@ namespace MultiplayerGame
         float blockSize;
         List<Player> players;
         Canvas gameCanvas;
+        TopBanner topBannerHUD;
 
         public BitmapImage RedFlagImage { get { return redFlagImage; } }
         public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
@@ -227,6 +229,7 @@ namespace MultiplayerGame
         public List<Player> Players { get { return players; } }
         public double TopPadding { get { return topPadding; } }
         public Canvas GameCanvas { get { return gameCanvas; } }
+        public TopBanner TopBannerHUD { get { return topBannerHUD; } }
 
         public Board(int row, int column, int mine, Window window)
         {
@@ -234,7 +237,7 @@ namespace MultiplayerGame
             this.row = row;
             this.column = column;
             this.mine = mine;
-
+            
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
             redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
             blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
@@ -244,11 +247,13 @@ namespace MultiplayerGame
 
         public void Initialize()
         {
+            
             gameCanvas = new Canvas();
             tiles = new List<Tile>();
             gameBoard = new Grid();
             blockSize = 50 - row;
             turn = -1;
+            players = new List<Player>();
 
             gameCanvas.Width = column * blockSize;
             gameCanvas.Height = row * blockSize + topPadding;
@@ -281,31 +286,19 @@ namespace MultiplayerGame
             }
             SetMine(RandomNumber(mine), tiles);
 
-            players = new List<Player>();
-            players.Add(new Player(0, this));
-            players.Add(new Player(1, this));
+            topBannerHUD = new TopBanner(this.gameCanvas.Width, topPadding, this.gameCanvas);
+            topBannerHUD.WinCondition.Content = mine / 2;
+            for (int i = 0; i < 2; i++)
+            {
+                topBannerHUD.LeftName.Content = "Player"+i;
+                players.Add(new Player(i, this));
+            }
+
+
 
             gameCanvas.Children.Add(this.gameBoard);
             gameWindow.Content = this.gameCanvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
-
-            Rectangle background = new Rectangle()
-            {
-                Width = gameCanvas.Width / 6,
-                Height = topPadding,
-                Fill = Brushes.Wheat,
-                StrokeThickness = 2,
-                Stroke = Brushes.Yellow,
-            };
-            background.SetValue(Canvas.LeftProperty, gameCanvas.Width / 2 - background.Width/2);
-            gameCanvas.Children.Add(background);
-
-
-            Label endCondition = new Label();
-            endCondition.Content = mine / 2;
-            endCondition.FontSize = 35;
-            endCondition.SetValue(Canvas.LeftProperty, gameCanvas.Width / 2 - endCondition.FontSize/2);
-            gameCanvas.Children.Add(endCondition);
 
             SwitchPlayerTurn();
         }
@@ -326,112 +319,14 @@ namespace MultiplayerGame
             foreach (int i in numbers)
                 tiles[i].SetMine(true);
         }
+
         public void SwitchPlayerTurn()
         {
-            if (turn == 0)
-            {
-                players[turn].PlayerHUDs.RemoveBorder();
-                turn = 1;
-                players[turn].PlayerHUDs.AddBorder();
-            }
-            else if (turn == 1)
-            {
-                players[turn].PlayerHUDs.RemoveBorder();
-                turn = 0;
-                players[turn].PlayerHUDs.AddBorder();
-            }
-            else
-            {
-                turn = 0;
-                players[turn].PlayerHUDs.AddBorder();
-            }
-        }
-    }
-
-    public class PlayerHUD
-    {
-        Board gameBoard;
-        Player player;
-        Label scoreLabel;
-        Label nameLabel;
-        Rectangle background;
-        int id;
-
-        public PlayerHUD(Board gameBoard, Player player)
-        {
-            this.player = player;
-            this.id = player.Id;
-            this.gameBoard = gameBoard;
-            Initialize();
-        }
-        public virtual void Initialize()
-        {
-            CreateBackground(Brushes.Red);
-            CreateNameLabel("Player" + (id+1).ToString());
-            CreateScoreLabel();
-            player.PlayerHUDs = this;
-        }
-
-        public void CreateNameLabel(string name)
-        {
-            nameLabel = new Label();
-            nameLabel.Content = name;
-            if(id == 0)
-                nameLabel.SetValue(Canvas.LeftProperty, 20.0);
-            else
-            nameLabel.SetValue(Canvas.RightProperty, 20.0);
-            nameLabel.SetValue(Canvas.TopProperty, 0.0);
-            nameLabel.FontSize = 30;
-            gameBoard.GameCanvas.Children.Add(nameLabel);
-        }
-
-        public void CreateScoreLabel()
-        {
-            scoreLabel = new Label();
-            scoreLabel.Content = player.Score;
-            if (id == 0)
-                scoreLabel.SetValue(Canvas.LeftProperty, 20.0);
-            else
-                scoreLabel.SetValue(Canvas.RightProperty, 20.0);
-            scoreLabel.SetValue(Canvas.TopProperty, 50.0);
-            scoreLabel.FontSize = 26;
-            gameBoard.GameCanvas.Children.Add(scoreLabel);
-        }
-
-        public void CreateBackground(SolidColorBrush colour)
-        {
-            background = new Rectangle()
-            {
-                Width = gameBoard.GameCanvas.Width / 2 - (45),
-                Height = gameBoard.TopPadding,
-                StrokeThickness = 5,
-            };
-            if (id == 0)
-            {
-                background.Fill = Brushes.Red;
-            }
-            else
-            {
-                background.Fill = Brushes.Blue;
-
-                background.SetValue(Canvas.RightProperty, 0.0);
-            }
-            gameBoard.GameCanvas.Children.Add(background);
-        }
-
-        public void AddBorder()
-        {
-            background.Stroke = Brushes.GreenYellow;
-        }
-
-        public void RemoveBorder()
-        {
-            background.Stroke = null;
-        }
-
-        public void UpdateScore(int score)
-        {
-            scoreLabel.Content = score.ToString();
+            bool bTurn = Convert.ToBoolean(turn);
+            topBannerHUD.RemoveIndicator(Convert.ToInt32(bTurn));
+            bTurn = !bTurn;
+            topBannerHUD.AddIndicator(Convert.ToInt32(bTurn));
+            turn = Convert.ToInt32(bTurn);
         }
     }
 
@@ -439,31 +334,18 @@ namespace MultiplayerGame
     {
         int score;
         int id;
-        PlayerHUD playerHUDs;
         Board gameBoard;
-        public PlayerHUD PlayerHUDs { get { return playerHUDs; } set { playerHUDs = value; }}
 
         public int Score
         {
             get { return score; }
-            set
-            {
-                score = value;
-                playerHUDs.UpdateScore(score);
-            }
+            set { score = value; }
         }
         public int Id { get { return id; } }
-
         public Player(int id, Board gameboard)
         {
             this.id = id;
             this.gameBoard = gameboard;
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            playerHUDs = new PlayerHUD(gameBoard, this);
         }
     }
 }

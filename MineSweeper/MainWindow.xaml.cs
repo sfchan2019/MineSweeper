@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.IO;
 using MultiplayerGame;
 using UserInterface;
+using MineSweeperInterface;
 
 namespace MineSweeper
 {
@@ -24,8 +25,8 @@ namespace MineSweeper
     
     public partial class MainWindow : Window
     {
-        MultiplayerGame.Board board;
-        //SinglePlayerGame.Board 
+        IMineSweeperGame multiGame;
+        IMineSweeperGame singleGame;
         UserInterface.Menu menu;
         
         public MainWindow()
@@ -38,18 +39,29 @@ namespace MineSweeper
             menu = new UserInterface.Menu(this);
             menu.StartButton.Click += OnStartButtonClick;
         }
-        public void InitializeMultiplayerGame(int row, int column, int mine)
+
+        public void InitializeGame(int row, int column, int mine, bool multiplayer)
         {
-            board = new MultiplayerGame.Board(row, column, mine, this);
-            board.GameboardEvent += OnGameover;
+            if (multiplayer)
+            {
+                multiGame = new MultiplayerGame.Board(row, column, mine, this);
+                MultiplayerGame.Board temp = multiGame as MultiplayerGame.Board;
+                temp.GameboardEvent += OnGameover;
+            }
+            else
+            {
+                singleGame = new SinglePlayerGame.Board(row, column, mine, this);
+                SinglePlayerGame.Board temp = singleGame as SinglePlayerGame.Board;
+                //temp.GameboardEvent += OnGameover;
+            }
         }
 
-        private void OnGameover(object sender, GameboardEventArgs e)
+        public void OnGameover(object sender, GameboardEventArgs e)
         {
             if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
                 return;
             Board gameBoard = sender as Board;
-            MessageBox.Show("Player" + (gameBoard.Turn+1).ToString() + " wins!", "Congratulations!");
+            MessageBox.Show("Player" + (gameBoard.Turn + 1).ToString() + " wins!", "Congratulations!");
             InitializeMenu();
         }
 
@@ -57,20 +69,22 @@ namespace MineSweeper
         {
             switch (menu.LevelOption.SelectedIndex)
             {
-                //case 0: //Easy                 
-                //    //InitializeMultiplayerGame(6, 6, 7);  //number of row, column and mine
-                //    break;
-                //case 1: //Normal
-                //    //InitializeMultiplayerGame(16, 16, 50);
-                //    break;
-                //case 2: //Difficult
-                //    //InitializeMultiplayerGame(25, 25, 100);
-                //    break;
-                case 0:
-                    InitializeMultiplayerGame(8, 8, 10);
+                case 0: //Easy                 
+                    InitializeGame(6, 6, 7, false);  //number of row, column and mine
                     break;
-                case 1:
-                    InitializeMultiplayerGame(16, 16, 50);
+                case 1: //Normal
+                    InitializeGame(16, 16, 50, false);
+                    break;
+                case 2: //Difficult
+                    InitializeGame(25, 25, 100, false);
+                    break;
+                case 3:
+                    InitializeGame(8, 8, 10, true);
+                    //games[1].Initialize();
+                    break;
+                case 4:
+                    InitializeGame(16, 16, 50, true);
+                    //games[1].Initialize();
                     break;
                 default:
                     break;

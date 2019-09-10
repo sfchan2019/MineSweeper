@@ -1,0 +1,5 @@
+C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeperInterface\bin\Debug\MineSweeperInterface.dll
+C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeperInterface\bin\Debug\MineSweeperInterface.pdb
+C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeperInterface\obj\Debug\MineSweeperInterface.csprojResolveAssemblyReference.cache
+C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeperInterface\obj\Debug\MineSweeperInterface.dll
+C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeperInterface\obj\Debug\MineSweeperInterface.pdb

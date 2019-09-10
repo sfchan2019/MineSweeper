@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper", "MineSweeper\MineSweeper.csproj", "{6C5B5A56-7D94-409E-A001-F073F44A6CCA}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SinglePlayer", "SinglePlayer\SinglePlayer.csproj", "{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{26008A61-A6EE-4822-BA07-FE60B3934ECA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeperInterface", "MineSweeperInterface\MineSweeperInterface.csproj", "{910315FF-849F-4985-84DD-B3D80B080F53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{910315FF-849F-4985-84DD-B3D80B080F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{910315FF-849F-4985-84DD-B3D80B080F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{910315FF-849F-4985-84DD-B3D80B080F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{910315FF-849F-4985-84DD-B3D80B080F53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
