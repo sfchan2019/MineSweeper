@@ -18,7 +18,7 @@ using MineSweeperInterface;
 
 namespace MultiplayerGame
 {
-    public class Tile
+    public abstract class Tile
     {
         public delegate void GameEvent(Object sender, GameboardEventArgs e);
         public GameEvent GameEventHandler;
@@ -28,42 +28,27 @@ namespace MultiplayerGame
                 GameEventHandler(this, e);
         }
 
-        System.Windows.Controls.Button button;
-        Board gameBoard;
-        int row;
-        int column;
-        int id;
-        bool hasMine;
-        bool isFinish;
+        protected Button button;
+        protected MineSweeper gameBoard;
+        protected int row;
+        protected int column;
+        protected int tileID;
+        protected bool hasMine;
+        protected bool isFinish;
 
         public bool HasMine { get { return hasMine; } }
         public bool IsFinish { get { return isFinish; } }
 
-        public Tile(int row, int column, Board gameBoard)
+        public virtual void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
-            this.column = column;
-            this.row = row;
-            this.gameBoard = gameBoard;
-            this.id = column + row * gameBoard.Column;
-            this.isFinish = false;
-            button = new Button();
-            hasMine = false;
-            button.Click += OnLeftClickTile;
-            button.Background = Brushes.SkyBlue;
-            System.Windows.Controls.Grid.SetColumn(this.button, column);
-            System.Windows.Controls.Grid.SetRow(this.button, row);
-            gameBoard.GameBoard.Children.Add(button);
-            GameEventHandler += OnCollectObject;
-        }
-        public void OnLeftClickTile(object sender, RoutedEventArgs e)
-        {
-            if (isFinish)
-                return;
-            if (!CheckHasObject())
-                gameBoard.SwitchPlayerTurn();
+
         }
 
-        public bool CheckHasObject()
+        public virtual void OnRightClickTile(object sender, RoutedEventArgs e) { }
+
+        public virtual void OnDoubleClickTile(object sender, MouseButtonEventArgs e) { }
+
+        public virtual bool CheckHasObject()
         {
             if (isFinish)
                 return false;
@@ -77,7 +62,7 @@ namespace MultiplayerGame
                 }
                 else
                 {
-                    List<int> numbers = GetNeighbourIndecies(this.id);
+                    List<int> numbers = GetNeighbourIndecies(this.tileID);
                     int count = CountObjFromGroup(numbers);
                     if (count == 0)
                     {
@@ -93,7 +78,7 @@ namespace MultiplayerGame
             return false;
         }
 
-        public void OnCollectObject(Object sender, GameboardEventArgs e)
+        public virtual void OnCollectObject(Object sender, GameboardEventArgs e)
         {
             if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
                 return;
@@ -104,7 +89,7 @@ namespace MultiplayerGame
                 gameBoard.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
         }
 
-        public void InvokeGroupOfTile(List<int> numbers)
+        public virtual void InvokeGroupOfTile(List<int> numbers)
         {
             this.button.IsEnabled = false;
             foreach (int i in numbers)
@@ -114,7 +99,7 @@ namespace MultiplayerGame
             }
         }
 
-        public int CountObjFromGroup(List<int> numbers)
+        public virtual int CountObjFromGroup(List<int> numbers)
         {
             int count = 0;
 
@@ -127,7 +112,7 @@ namespace MultiplayerGame
             return count;
         }
 
-        List<int> GetNeighbourIndecies(int i)
+        protected List<int> GetNeighbourIndecies(int i)
         {
             int x = i % this.gameBoard.Column;
             int y = i / this.gameBoard.Column;
@@ -154,7 +139,7 @@ namespace MultiplayerGame
             return numbers;
         }
 
-        public void SetTileImage(string text)
+        public virtual void SetTileImage(string text)
         {
             switch (text)
             {
@@ -170,56 +155,334 @@ namespace MultiplayerGame
                     break;
             }
         }
-
         public void SetMine(bool mine)
         {
             this.hasMine = mine;
         }
     }
-    public enum GAME_EVENT
-    {
-        COLLECT_OBJECT, GAMEOVER,
-    }
 
-    public class GameboardEventArgs : EventArgs
+    public class MP_Tile : Tile
     {
-        private GAME_EVENT gameboardEvent;
-        public GAME_EVENT GameboardEvent { get { return gameboardEvent; } }
-        public GameboardEventArgs(GAME_EVENT e)
+        public MP_Tile(int row, int column, MineSweeper gameBoard)
         {
-            gameboardEvent = e;
+            this.column = column;
+            this.row = row;
+            this.gameBoard = gameBoard;
+            this.tileID = column + row * gameBoard.Column;
+            this.isFinish = false;
+            button = new Button();
+            hasMine = false;
+            button.Click += OnLeftClickTile;
+            button.Background = Brushes.SkyBlue;
+            System.Windows.Controls.Grid.SetColumn(this.button, column);
+            System.Windows.Controls.Grid.SetRow(this.button, row);
+            gameBoard.GameBoard.Children.Add(button);
+            GameEventHandler += OnCollectObject;
+        }
+
+        public override void OnLeftClickTile(object sender, RoutedEventArgs e)
+        {
+            base.OnLeftClickTile(sender, e);
+            if (isFinish)
+                return;
+            if (!CheckHasObject())
+                (gameBoard as MP_GameBoard).SwitchPlayerTurn();
         }
     }
 
-    public class Board: IMineSweeperGame
+    public class SP_Tile : Tile
+    {
+        SP_GameBoard board;
+        public SP_Tile(int row, int column, MineSweeper gameBoard)
+        {
+            this.column = column;
+            this.row = row;
+            this.gameBoard = gameBoard;
+            this.tileID = column + row * gameBoard.Column;
+            this.isFinish = false;
+            board = gameBoard as SP_GameBoard;
+            button = new Button();
+            hasMine = false;
+            button.Click += OnLeftClickTile;
+            button.MouseDoubleClick += OnDoubleClickTile;
+            button.MouseRightButtonDown += OnRightClickTile;
+            System.Windows.Controls.Grid.SetColumn(this.button, column);
+            System.Windows.Controls.Grid.SetRow(this.button, row);
+            gameBoard.GameBoard.Children.Add(button);
+            GameEventHandler += OnCollectObject;
+        }
+
+        public override void OnCollectObject(object sender, GameboardEventArgs e)
+        {
+            //base.OnCollectObject(sender, e);
+
+        }
+
+        public override void OnLeftClickTile(object sender, RoutedEventArgs e)
+        {
+            base.OnLeftClickTile(sender, e);
+            if (isFinish)
+                return;
+            this.isFinish = true;
+            button.MouseRightButtonDown -= OnRightClickTile;
+            board.FinishCount++;
+            if (hasMine)
+            {
+                board.ShowAllMine();
+                board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
+            }
+            else
+            {
+                CheckHasObject();
+            }
+        }
+
+        public override bool CheckHasObject()
+        {
+            if (HasMine)
+            {
+                board.ShowAllMine();
+                RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
+            }
+
+            else
+            {
+                List<int> numbers = GetNeighbourIndecies(this.tileID);
+                int count = CountObjFromGroup(numbers);
+                if (count == 0)
+                {
+                    this.button.IsEnabled = false;
+                    InvokeGroupOfTile(numbers);
+                }
+                else
+                {
+                    SetTileImage(count.ToString());
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        public override void InvokeGroupOfTile(List<int> numbers)
+        {
+            foreach (int i in numbers)
+            {
+                SP_Tile temp = gameBoard.Tiles[i] as SP_Tile;
+                if (temp.hasMine && !temp.isFinish)
+                {
+                    temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    return;
+                }
+            }
+            foreach (int i in numbers)
+            {
+                SP_Tile temp = gameBoard.Tiles[i] as SP_Tile;
+                temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
+        }
+
+        public override void OnDoubleClickTile(object sender, MouseButtonEventArgs e)
+        {
+            base.OnDoubleClickTile(sender, e);
+
+            if (e.ChangedButton == MouseButton.Left)
+                InvokeGroupOfTile(GetNeighbourIndecies(tileID));
+        }
+
+        public override void OnRightClickTile(object sender, RoutedEventArgs e)
+        {
+            base.OnRightClickTile(sender, e);
+            FlagTile();
+        }
+
+        public void FlagTile()
+        {
+            if (!isFinish)
+            {
+                SetTileImage("F");
+                board.FinishCount++;
+                if (hasMine)
+                    board.Mine--;
+            }
+            else
+            {
+                SetTileImage("U");
+                board.FinishCount--;
+                if (hasMine)
+                    board.Mine++;
+            }
+            isFinish = !isFinish;
+        }
+
+        public override void SetTileImage(string text)
+        {
+            switch (text)
+            {
+                case "M":   //Mine
+                    button.Content = new Image() { Source = gameBoard.MineImage };
+                    break;
+                case "F":   //Flag
+                    button.Content = new Image() { Source = gameBoard.FlagImage };
+                    break;
+                case "U":   //Unflag
+                    button.Content = "";
+                    button.Background = Brushes.LightGray;
+                    break;
+                default:
+                    button.Content = text;
+                    button.Background = Brushes.SkyBlue;
+                    break;
+            }
+        }
+    }
+
+    public class SP_GameBoard : MineSweeper
+    {
+        int finishCount;
+        public int FinishCount { get { return finishCount; }set { finishCount = value; } }
+        public SP_GameBoard() { }
+
+        public override void Initialize(int row, int column, int mine, Window window)
+        {
+            base.Initialize(row, column, mine, window);
+            gameBoard.Background = new SolidColorBrush(Colors.LightGray);
+
+            //Create rows
+            for (int i = 0; i < row; i++)
+            {
+                RowDefinition rowDef = new RowDefinition();
+                rowDef.Height = new GridLength(blockSize);
+                gameBoard.RowDefinitions.Add(rowDef);
+                // Create Columns
+                for (int j = 0; j < column; j++)
+                {
+                    ColumnDefinition columnDef = new ColumnDefinition();
+                    columnDef.Width = new GridLength(blockSize);
+                    gameBoard.ColumnDefinitions.Add(columnDef);
+                    Tile tile = new SP_Tile(i, j, this);
+                    tiles.Add(tile);
+                }
+            }
+            SetMine(RandomNumber(mine), tiles);
+
+            gameCanvas.Children.Add(this.gameBoard);
+            gameWindow.Content = this.gameCanvas;
+            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+        }
+
+        public void ShowAllMine()
+        {
+            foreach (Tile t in tiles)
+            {
+                if (t.HasMine && !t.IsFinish)
+                    t.SetTileImage("M");
+            }
+        }
+    }
+
+    public class MP_GameBoard : MineSweeper
+    {
+        public MP_GameBoard() { }
+
+        public override void Initialize(int row, int column, int mine, Window window)
+        {
+            //assign values to variables
+            base.Initialize(row, column, mine, window);
+
+            //Create rows
+            for (int i = 0; i < row; i++)
+            {
+                RowDefinition rowDef = new RowDefinition();
+                rowDef.Height = new GridLength(blockSize);
+                gameBoard.RowDefinitions.Add(rowDef);
+                // Create Columns
+                for (int j = 0; j < column; j++)
+                {
+                    ColumnDefinition columnDef = new ColumnDefinition();
+                    columnDef.Width = new GridLength(blockSize);
+                    gameBoard.ColumnDefinitions.Add(columnDef);
+                    Tile tile = new MP_Tile(i, j, this);
+                    tiles.Add(tile);
+                }
+            }
+            SetMine(RandomNumber(mine), tiles);
+
+            topBannerHUD = new TopBanner(this.gameCanvas.Width, topPadding, this.gameCanvas);
+            topBannerHUD.WinCondition.Content = mine / 2;
+            for (int i = 0; i < 2; i++)
+            {
+                topBannerHUD.LeftName.Content = "Player"+i;
+                players.Add(new Player(i, this));
+            }
+
+            gameCanvas.Children.Add(this.gameBoard);
+            gameWindow.Content = this.gameCanvas;
+            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+
+            SwitchPlayerTurn();
+        }
+
+        public void SwitchPlayerTurn()
+        {
+            bool bTurn = Convert.ToBoolean(turn);
+            topBannerHUD.RemoveIndicator(Convert.ToInt32(bTurn));
+            bTurn = !bTurn;
+            topBannerHUD.AddIndicator(Convert.ToInt32(bTurn));
+            turn = Convert.ToInt32(bTurn);
+        }
+    }
+
+    public class Player
+    {
+        int score;
+        int id;
+        MP_GameBoard gameBoard;
+
+        public int Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+        public int Id { get { return id; } }
+        public Player(int id, MP_GameBoard gameboard)
+        {
+            this.id = id;
+            this.gameBoard = gameboard;
+        }
+    }
+
+    public abstract class MineSweeper
     {
         public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
-        public event GameboardEventHandler GameboardEvent;    
+        public event GameboardEventHandler GameboardEvent;
         public void RaiseEvent(GameboardEventArgs e)
         {
             if (GameboardEvent != null)
                 GameboardEvent(this, e);
         }
 
-        BitmapImage mineImage;
-        BitmapImage redFlagImage;
-        BitmapImage blueFlagImage;
-        Window gameWindow;
-        List<Tile> tiles;
-        Grid gameBoard;
-        int row;
-        int column;
-        int mine;
-        int turn = 0;
-        double topPadding = 100;
-        float blockSize;
-        List<Player> players;
-        Canvas gameCanvas;
-        TopBanner topBannerHUD;
+        protected BitmapImage mineImage;
+        protected BitmapImage flagImage;
+        protected BitmapImage redFlagImage;
+        protected BitmapImage blueFlagImage;
+        protected Window gameWindow;
+        protected List<Tile> tiles;
+        protected Grid gameBoard;
+        protected int row;
+        protected int column;
+        protected int mine;
+        protected int turn = 0;
+        protected double topPadding = 100;
+        protected float blockSize;
+        protected List<Player> players;
+        protected Canvas gameCanvas;
+        protected TopBanner topBannerHUD;
 
         public BitmapImage RedFlagImage { get { return redFlagImage; } }
         public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
+        public BitmapImage FlagImage { get { return flagImage; } }
         public List<Tile> Tiles { get { return tiles; } }
         public Grid GameBoard { get { return gameBoard; } }
         public int Row { get { return row; } set { row = value; } }
@@ -231,23 +494,18 @@ namespace MultiplayerGame
         public Canvas GameCanvas { get { return gameCanvas; } }
         public TopBanner TopBannerHUD { get { return topBannerHUD; } }
 
-        public Board(int row, int column, int mine, Window window)
+        public virtual void Initialize(int row, int column, int mine, Window window)
         {
             this.gameWindow = window;
             this.row = row;
             this.column = column;
             this.mine = mine;
-            
+
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
             redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
             blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
+            flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
 
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            
             gameCanvas = new Canvas();
             tiles = new List<Tile>();
             gameBoard = new Grid();
@@ -266,44 +524,9 @@ namespace MultiplayerGame
             gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
             gameBoard.VerticalAlignment = VerticalAlignment.Top;
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
-
-            //Create rows
-            for (int i = 0; i < row; i++)
-            {
-                RowDefinition rowDef = new RowDefinition();
-                rowDef.Height = new GridLength(blockSize);
-                gameBoard.RowDefinitions.Add(rowDef);
-
-                // Create Columns
-                for (int j = 0; j < column; j++)
-                {
-                    ColumnDefinition columnDef = new ColumnDefinition();
-                    columnDef.Width = new GridLength(blockSize);
-                    gameBoard.ColumnDefinitions.Add(columnDef);
-                    Tile tile = new Tile(i, j, this);
-                    tiles.Add(tile);
-                }
-            }
-            SetMine(RandomNumber(mine), tiles);
-
-            topBannerHUD = new TopBanner(this.gameCanvas.Width, topPadding, this.gameCanvas);
-            topBannerHUD.WinCondition.Content = mine / 2;
-            for (int i = 0; i < 2; i++)
-            {
-                topBannerHUD.LeftName.Content = "Player"+i;
-                players.Add(new Player(i, this));
-            }
-
-
-
-            gameCanvas.Children.Add(this.gameBoard);
-            gameWindow.Content = this.gameCanvas;
-            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
-
-            SwitchPlayerTurn();
         }
 
-        public HashSet<int> RandomNumber(int num_of_mine)
+        protected HashSet<int> RandomNumber(int num_of_mine)
         {
             HashSet<int> numbers = new HashSet<int>();
             Random random = new Random();
@@ -314,38 +537,12 @@ namespace MultiplayerGame
             return numbers;
         }
 
-        public void SetMine(HashSet<int> numbers, List<Tile> tiles)
+        protected void SetMine(HashSet<int> numbers, List<Tile> tiles)
         {
             foreach (int i in numbers)
                 tiles[i].SetMine(true);
         }
-
-        public void SwitchPlayerTurn()
-        {
-            bool bTurn = Convert.ToBoolean(turn);
-            topBannerHUD.RemoveIndicator(Convert.ToInt32(bTurn));
-            bTurn = !bTurn;
-            topBannerHUD.AddIndicator(Convert.ToInt32(bTurn));
-            turn = Convert.ToInt32(bTurn);
-        }
     }
 
-    public class Player
-    {
-        int score;
-        int id;
-        Board gameBoard;
 
-        public int Score
-        {
-            get { return score; }
-            set { score = value; }
-        }
-        public int Id { get { return id; } }
-        public Player(int id, Board gameboard)
-        {
-            this.id = id;
-            this.gameBoard = gameboard;
-        }
-    }
 }

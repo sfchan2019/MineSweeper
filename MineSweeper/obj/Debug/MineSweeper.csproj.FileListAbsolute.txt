@@ -42,3 +42,5 @@ C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\Min
 C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\UserInterface.pdb
 C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\MineSweeperInterface.dll
 C:\Users\Sing\Documents\Visual Studio 2015\Projects\Sparta Global\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\MineSweeperInterface.pdb
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\MineSweeperInterface.dll
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\MineSweeper\bin\Debug\MineSweeperInterface.pdb

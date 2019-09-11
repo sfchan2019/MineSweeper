@@ -85,8 +85,8 @@ namespace SinglePlayerGame
             gameBoard.FinishCount++;
             if (hasMine)
             {
-                gameBoard.Gameover();
-                button.Content = new Image() { Source = gameBoard.MineImage };
+                gameBoard.ShowAllMine();
+                gameBoard.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
             }
             else
             {
@@ -196,15 +196,8 @@ namespace SinglePlayerGame
         }
     }
 
-    public class GameboardEventArgs : EventArgs
-    {
-        public GameboardEventArgs()
-        {
 
-        }
-    }
-
-    public class Board:IMineSweeperGame
+    public class Board : IMineSweeperGame
     {
         public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
         public event GameboardEventHandler GameboardEvent;
@@ -242,7 +235,9 @@ namespace SinglePlayerGame
             }
         }
 
-        public Board(int row, int column, int mine, Window window)
+        public Board() { }
+
+        public void Initialize(int row, int column, int mine, Window window)
         {
             this.gameWindow = window;
             this.row = row;
@@ -252,11 +247,6 @@ namespace SinglePlayerGame
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
             flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
 
-            Initialize();
-        }
-
-        public void Initialize()
-        {
             canvas = new Canvas();
             double topPadding = 100.0f;
             tiles = new List<Tile>();
@@ -296,7 +286,6 @@ namespace SinglePlayerGame
             SetMine(RandomNumber(mine), tiles);
 
             canvas.Children.Add(this.gameBoard);
-            //gameWindow.Content = this.gameBoard;
             gameWindow.Content = this.canvas;
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
@@ -326,12 +315,6 @@ namespace SinglePlayerGame
                 if (t.HasMine && !t.IsFinish)
                     t.SetTileImage("M");
             }
-        }
-
-        public void Gameover()
-        {
-            ShowAllMine();
-            RaiseEvent(new GameboardEventArgs());
         }
     }
 
