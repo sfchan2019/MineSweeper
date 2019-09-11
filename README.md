@@ -1,5 +1,16 @@
 # MineSweeper
-This repository was created to submit my Mine Sweeper game
+This repository was created to submit my first academy project - Mine Sweeper
+
+## Game Instruction
+### Single player
+* Click on a tile in the grid, the number on the tile indicates the number of mine around this tile;
+* Avoid and successfully flag all the mine from the board to win;
+
+### Multiplayer 
+* This is a turn-based game, each player take turn to find the mine;
+* The number on the tile indicates the number of mine around the tile;
+* Player that has successfully found the mine will earn the chance to move again;
+* In multiplayer game mode, player that flag out most of the mine win the game;
 
 ## Day 1
 ### General Implementation
