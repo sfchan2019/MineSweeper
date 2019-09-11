@@ -72,3 +72,10 @@ This repository was created to submit my first academy project - Mine Sweeper
 * GAME_EVENT - This is an enum, a list of game event that can be used to check what type of game event has raised;
 * MainWindow - This class is the entry point of the program also to create the window application;
 
+## Reflection
+* It was not too difficult to create the main game features and single player game mode, but as the game expanded the program get more complicated;
+* Some functions were placed in a class that it should not be, it was not difficult to move them away the class or namespace but remain the connection;
+* Spent half of the time to otimize the game and trying to apply ing SOLID principle, still some of the functions cannot follow the this principle;
+* The game assests are not otimized, and some of the UI elemnts are not positioning very well;
+* However, a fully functional mine sweeper game has been created in a short time and it has two different game mode;
+* For project like this in the future that uses WPF, XAML can be used more often and work together with C# to make C# programming easier;
