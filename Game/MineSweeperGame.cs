@@ -170,6 +170,98 @@ namespace MineSweeperGame
         }
     }
 
+    public abstract class MineSweeper
+    {
+        public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
+        public event GameboardEventHandler GameboardEvent;
+        public void RaiseEvent(GameboardEventArgs e)
+        {
+            if (GameboardEvent != null)
+                GameboardEvent(this, e);
+        }
+
+        protected BitmapImage mineImage;
+        protected BitmapImage flagImage;
+        protected BitmapImage redFlagImage;
+        protected BitmapImage blueFlagImage;
+        protected Window gameWindow;
+        protected List<Tile> tiles;
+        protected Grid gameBoard;
+        protected int row;
+        protected int column;
+        protected int mine;
+        protected int turn = 0;
+        protected double topPadding = 100;
+        protected float blockSize;
+        protected List<Player> players;
+        protected Canvas gameCanvas;
+        protected TopBanner topBannerHUD;
+
+        public BitmapImage RedFlagImage { get { return redFlagImage; } }
+        public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
+        public BitmapImage MineImage { get { return mineImage; } }
+        public BitmapImage FlagImage { get { return flagImage; } }
+        public List<Tile> Tiles { get { return tiles; } }
+        public Grid GameBoard { get { return gameBoard; } }
+        public int Row { get { return row; } set { row = value; } }
+        public int Mine { get { return mine; } set { mine = value; } }
+        public int Column { get { return column; } set { column = value; } }
+        public int Turn { get { return turn; } set { turn = value; } }
+        public List<Player> Players { get { return players; } }
+        public double TopPadding { get { return topPadding; } }
+        public Canvas GameCanvas { get { return gameCanvas; } }
+        public TopBanner TopBannerHUD { get { return topBannerHUD; } }
+
+        public virtual void Initialize(int row, int column, int mine, Window window)
+        {
+            this.gameWindow = window;
+            this.row = row;
+            this.column = column;
+            this.mine = mine;
+
+            mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
+            redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
+            blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
+            flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
+
+            gameCanvas = new Canvas();
+            tiles = new List<Tile>();
+            gameBoard = new Grid();
+            blockSize = 50 - row;
+            turn = -1;
+            players = new List<Player>();
+
+            gameCanvas.Width = column * blockSize;
+            gameCanvas.Height = row * blockSize + topPadding;
+
+            // Create the Grid
+            gameBoard = new Grid();
+            gameBoard.Width = column * blockSize;
+            gameBoard.Height = row * blockSize;
+            gameBoard.SetValue(Canvas.TopProperty, topPadding);
+            gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
+            gameBoard.VerticalAlignment = VerticalAlignment.Top;
+            gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
+        }
+
+        protected HashSet<int> RandomNumber(int num_of_mine)
+        {
+            HashSet<int> numbers = new HashSet<int>();
+            Random random = new Random();
+            while (numbers.Count < num_of_mine)
+            {
+                numbers.Add(random.Next(0, (row * column) - 1));
+            }
+            return numbers;
+        }
+
+        protected void SetMine(HashSet<int> numbers, List<Tile> tiles)
+        {
+            foreach (int i in numbers)
+                tiles[i].SetMine(true);
+        }
+    }
+
     public class MP_Tile : Tile
     {
         public MP_Tile(int row, int column, MineSweeper gameBoard)
@@ -196,6 +288,50 @@ namespace MineSweeperGame
                 return;
             if (!CheckHasObject())
                 (gameBoard as MP_GameBoard).SwitchPlayerTurn();
+        }
+    }
+
+    public class SP_GameBoard : MineSweeper
+    {
+        int finishCount;
+        public int FinishCount { get { return finishCount; } set { finishCount = value; } }
+        public SP_GameBoard() { }
+
+        public override void Initialize(int row, int column, int mine, Window window)
+        {
+            base.Initialize(row, column, mine, window);
+            gameBoard.Background = new SolidColorBrush(Colors.LightGray);
+
+            //Create rows
+            for (int i = 0; i < row; i++)
+            {
+                RowDefinition rowDef = new RowDefinition();
+                rowDef.Height = new GridLength(blockSize);
+                gameBoard.RowDefinitions.Add(rowDef);
+                // Create Columns
+                for (int j = 0; j < column; j++)
+                {
+                    ColumnDefinition columnDef = new ColumnDefinition();
+                    columnDef.Width = new GridLength(blockSize);
+                    gameBoard.ColumnDefinitions.Add(columnDef);
+                    Tile tile = new SP_Tile(i, j, this);
+                    tiles.Add(tile);
+                }
+            }
+            SetMine(RandomNumber(mine), tiles);
+
+            gameCanvas.Children.Add(this.gameBoard);
+            gameWindow.Content = this.gameCanvas;
+            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
+        }
+
+        public void ShowAllMine()
+        {
+            foreach (Tile t in tiles)
+            {
+                if (t.HasMine)
+                    t.SetTileImage("M");
+            }
         }
     }
 
@@ -341,50 +477,6 @@ namespace MineSweeperGame
         }
     }
 
-    public class SP_GameBoard : MineSweeper
-    {
-        int finishCount;
-        public int FinishCount { get { return finishCount; }set { finishCount = value; } }
-        public SP_GameBoard() { }
-
-        public override void Initialize(int row, int column, int mine, Window window)
-        {
-            base.Initialize(row, column, mine, window);
-            gameBoard.Background = new SolidColorBrush(Colors.LightGray);
-
-            //Create rows
-            for (int i = 0; i < row; i++)
-            {
-                RowDefinition rowDef = new RowDefinition();
-                rowDef.Height = new GridLength(blockSize);
-                gameBoard.RowDefinitions.Add(rowDef);
-                // Create Columns
-                for (int j = 0; j < column; j++)
-                {
-                    ColumnDefinition columnDef = new ColumnDefinition();
-                    columnDef.Width = new GridLength(blockSize);
-                    gameBoard.ColumnDefinitions.Add(columnDef);
-                    Tile tile = new SP_Tile(i, j, this);
-                    tiles.Add(tile);
-                }
-            }
-            SetMine(RandomNumber(mine), tiles);
-
-            gameCanvas.Children.Add(this.gameBoard);
-            gameWindow.Content = this.gameCanvas;
-            gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
-        }
-
-        public void ShowAllMine()
-        {
-            foreach (Tile t in tiles)
-            {
-                if (t.HasMine)
-                    t.SetTileImage("M");
-            }
-        }
-    }
-
     public class MP_GameBoard : MineSweeper
     {
         public MP_GameBoard() { }
@@ -454,98 +546,4 @@ namespace MineSweeperGame
             this.gameBoard = gameboard;
         }
     }
-
-    public abstract class MineSweeper
-    {
-        public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
-        public event GameboardEventHandler GameboardEvent;
-        public void RaiseEvent(GameboardEventArgs e)
-        {
-            if (GameboardEvent != null)
-                GameboardEvent(this, e);
-        }
-
-        protected BitmapImage mineImage;
-        protected BitmapImage flagImage;
-        protected BitmapImage redFlagImage;
-        protected BitmapImage blueFlagImage;
-        protected Window gameWindow;
-        protected List<Tile> tiles;
-        protected Grid gameBoard;
-        protected int row;
-        protected int column;
-        protected int mine;
-        protected int turn = 0;
-        protected double topPadding = 100;
-        protected float blockSize;
-        protected List<Player> players;
-        protected Canvas gameCanvas;
-        protected TopBanner topBannerHUD;
-
-        public BitmapImage RedFlagImage { get { return redFlagImage; } }
-        public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
-        public BitmapImage MineImage { get { return mineImage; } }
-        public BitmapImage FlagImage { get { return flagImage; } }
-        public List<Tile> Tiles { get { return tiles; } }
-        public Grid GameBoard { get { return gameBoard; } }
-        public int Row { get { return row; } set { row = value; } }
-        public int Mine { get { return mine; } set { mine = value; } }
-        public int Column { get { return column; } set { column = value; } }
-        public int Turn { get { return turn; } set { turn = value; } }
-        public List<Player> Players { get { return players; } }
-        public double TopPadding { get { return topPadding; } }
-        public Canvas GameCanvas { get { return gameCanvas; } }
-        public TopBanner TopBannerHUD { get { return topBannerHUD; } }
-
-        public virtual void Initialize(int row, int column, int mine, Window window)
-        {
-            this.gameWindow = window;
-            this.row = row;
-            this.column = column;
-            this.mine = mine;
-
-            mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
-            redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
-            blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
-            flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
-
-            gameCanvas = new Canvas();
-            tiles = new List<Tile>();
-            gameBoard = new Grid();
-            blockSize = 50 - row;
-            turn = -1;
-            players = new List<Player>();
-
-            gameCanvas.Width = column * blockSize;
-            gameCanvas.Height = row * blockSize + topPadding;
-
-            // Create the Grid
-            gameBoard = new Grid();
-            gameBoard.Width = column * blockSize;
-            gameBoard.Height = row * blockSize;
-            gameBoard.SetValue(Canvas.TopProperty, topPadding);
-            gameBoard.HorizontalAlignment = HorizontalAlignment.Left;
-            gameBoard.VerticalAlignment = VerticalAlignment.Top;
-            gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
-        }
-
-        protected HashSet<int> RandomNumber(int num_of_mine)
-        {
-            HashSet<int> numbers = new HashSet<int>();
-            Random random = new Random();
-            while (numbers.Count < num_of_mine)
-            {
-                numbers.Add(random.Next(0, (row * column) - 1));
-            }
-            return numbers;
-        }
-
-        protected void SetMine(HashSet<int> numbers, List<Tile> tiles)
-        {
-            foreach (int i in numbers)
-                tiles[i].SetMine(true);
-        }
-    }
-
-
 }
