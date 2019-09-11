@@ -25,7 +25,7 @@ namespace MineSweeperGame
     {
         GAME_EVENT e;
         public GAME_EVENT GameboardEvent { get { return e; } }
-        public GameboardEventArgs(GAME_EVENT e) { }
+        public GameboardEventArgs(GAME_EVENT e) {this.e = e; }
     }
     public abstract class Tile
     {
@@ -237,20 +237,14 @@ namespace MineSweeperGame
             this.isFinish = true;
             button.MouseRightButtonDown -= OnRightClickTile;
             board.FinishCount++;
-            if (hasMine)
-            {
+            if (CheckHasObject())
                 RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
-            }
-            else
-            {
-                CheckHasObject();
-            }
         }
 
         public override bool CheckHasObject()
         {
             if (HasMine)
-                RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
+                return true;
             else
             {
                 List<int> numbers = GetNeighbourIndecies(this.tileID);
@@ -307,13 +301,17 @@ namespace MineSweeperGame
             if (!isFinish)
             {
                 SetTileImage("F");
+                button.MouseDoubleClick -= OnDoubleClickTile;
                 board.FinishCount++;
                 if (hasMine)
                     board.Mine--;
+                if (board.Mine == 0)
+                    board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
             }
             else
             {
                 SetTileImage("U");
+                button.MouseDoubleClick += OnDoubleClickTile;
                 board.FinishCount--;
                 if (hasMine)
                     board.Mine++;
@@ -381,7 +379,7 @@ namespace MineSweeperGame
         {
             foreach (Tile t in tiles)
             {
-                if (t.HasMine && !t.IsFinish)
+                if (t.HasMine)
                     t.SetTileImage("M");
             }
         }
@@ -415,7 +413,7 @@ namespace MineSweeperGame
             SetMine(RandomNumber(mine), tiles);
 
             topBannerHUD = new TopBanner(this.gameCanvas.Width, topPadding, this.gameCanvas);
-            topBannerHUD.WinCondition.Content = mine / 2;
+            topBannerHUD.WinCondition.Content = mine / 2 + 1;
             for (int i = 0; i < 2; i++)
             {
                 topBannerHUD.LeftName.Content = "Player"+i;

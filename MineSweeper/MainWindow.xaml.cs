@@ -61,7 +61,11 @@ namespace MineSweeper
         {
             if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
                 return;
-            MessageBox.Show("Gameover");
+            SP_GameBoard game = sender as SP_GameBoard;
+            if (game.Mine == 0)
+                MessageBox.Show("Congratulations!");
+            else
+                MessageBox.Show("Gameover");
             InitializeMenu();
         }
 
