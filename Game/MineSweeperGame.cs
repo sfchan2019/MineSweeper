@@ -416,7 +416,6 @@ namespace MineSweeperGame
             topBannerHUD.WinCondition.Content = mine / 2 + 1;
             for (int i = 0; i < 2; i++)
             {
-                topBannerHUD.LeftName.Content = "Player"+i;
                 players.Add(new Player(i, this));
             }
 

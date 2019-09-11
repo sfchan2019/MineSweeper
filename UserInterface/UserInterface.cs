@@ -171,7 +171,7 @@ namespace UserInterface
             rightName = new Label();
             rightName.FontSize = 35;
             rightName.SetValue(Canvas.RightProperty, 0.0);
-            rightName.Content = "Player1";
+            rightName.Content = "Player2";
             gameCanvas.Children.Add(rightName);
 
             rightScore = new Label();
