@@ -1,0 +1,5 @@
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\Interface\bin\Debug\Interface.dll
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\Interface\bin\Debug\Interface.pdb
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\Interface\obj\Debug\UserInterface.csproj.CoreCompileInputs.cache
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\Interface\obj\Debug\Interface.dll
+C:\Users\Seng Fai Chan\Documents\Visual Studio Project\Engineering40\Week5\Day1\MineSweeper\Interface\obj\Debug\Interface.pdb

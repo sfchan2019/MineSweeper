@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper", "MineSweeper\MineSweeper.csproj", "{6C5B5A56-7D94-409E-A001-F073F44A6CCA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiPlayer", "Game\MultiPlayer.csproj", "{57E1B2F9-E6F3-4FF3-9CB0-F05E408E4D76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SinglePlayer", "SinglePlayer\SinglePlayer.csproj", "{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{26008A61-A6EE-4822-BA07-FE60B3934ECA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeperInterface", "MineSweeperInterface\MineSweeperInterface.csproj", "{910315FF-849F-4985-84DD-B3D80B080F53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "Interface\UserInterface.csproj", "{3F710EDF-5E49-4076-9A90-72D25C999883}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,18 +23,10 @@ Global
 		{57E1B2F9-E6F3-4FF3-9CB0-F05E408E4D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57E1B2F9-E6F3-4FF3-9CB0-F05E408E4D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57E1B2F9-E6F3-4FF3-9CB0-F05E408E4D76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48B6FD2E-2585-40A8-B2DD-9F30BF9C7C55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26008A61-A6EE-4822-BA07-FE60B3934ECA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{910315FF-849F-4985-84DD-B3D80B080F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{910315FF-849F-4985-84DD-B3D80B080F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{910315FF-849F-4985-84DD-B3D80B080F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{910315FF-849F-4985-84DD-B3D80B080F53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F710EDF-5E49-4076-9A90-72D25C999883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F710EDF-5E49-4076-9A90-72D25C999883}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F710EDF-5E49-4076-9A90-72D25C999883}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F710EDF-5E49-4076-9A90-72D25C999883}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

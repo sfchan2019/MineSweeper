@@ -14,10 +14,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using UserInterface;
-using MineSweeperInterface;
 
-namespace MultiplayerGame
+namespace MineSweeperGame
 {
+    public enum GAME_EVENT
+    {
+        GAMEOVER, COLLECT_OBJECT,
+    }
+    public class GameboardEventArgs : EventArgs
+    {
+        GAME_EVENT e;
+        public GAME_EVENT GameboardEvent { get { return e; } }
+        public GameboardEventArgs(GAME_EVENT e) { }
+    }
     public abstract class Tile
     {
         public delegate void GameEvent(Object sender, GameboardEventArgs e);
@@ -214,8 +223,10 @@ namespace MultiplayerGame
 
         public override void OnCollectObject(object sender, GameboardEventArgs e)
         {
-            //base.OnCollectObject(sender, e);
-
+            if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
+                return;
+            board.ShowAllMine();
+            board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
         }
 
         public override void OnLeftClickTile(object sender, RoutedEventArgs e)
@@ -228,8 +239,7 @@ namespace MultiplayerGame
             board.FinishCount++;
             if (hasMine)
             {
-                board.ShowAllMine();
-                board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
+                RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
             }
             else
             {
@@ -240,11 +250,7 @@ namespace MultiplayerGame
         public override bool CheckHasObject()
         {
             if (HasMine)
-            {
-                board.ShowAllMine();
-                RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
-            }
-
+                RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
             else
             {
                 List<int> numbers = GetNeighbourIndecies(this.tileID);

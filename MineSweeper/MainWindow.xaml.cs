@@ -13,9 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
-using MultiplayerGame;
+using MineSweeperGame;
 using UserInterface;
-using MineSweeperInterface;
 
 namespace MineSweeper
 {
@@ -25,8 +24,8 @@ namespace MineSweeper
     
     public partial class MainWindow : Window
     {
-        List<IMineSweeperGame> games = new List<IMineSweeperGame>();
         UserInterface.Menu menu;
+        List<MineSweeperGame.MineSweeper> games = new List<MineSweeperGame.MineSweeper>();
         
         public MainWindow()
         {
@@ -37,9 +36,10 @@ namespace MineSweeper
 
         public void Initialize()
         {
-            //games.Add(new SinglePlayerGame.Board());
-            //games.Add(new MultiplayerGame.Board());
-            //(games[1] as MultiplayerGame.Board).GameboardEvent += OnGameover;
+            games.Add(new MineSweeperGame.SP_GameBoard());
+            games[0].GameboardEvent += OnSinglePlayerGameover;
+            games.Add(new MineSweeperGame.MP_GameBoard());
+            games[1].GameboardEvent += OnMultiplayerGameover;
         }
     
         public void InitializeMenu()
@@ -48,12 +48,20 @@ namespace MineSweeper
             menu.StartButton.Click += OnStartButtonClick;
         }
 
-        public void OnGameover(object sender, GameboardEventArgs e)
+        public void OnMultiplayerGameover(object sender, GameboardEventArgs e)
         {
             if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
                 return;
             MP_GameBoard gameBoard = sender as MP_GameBoard;
             MessageBox.Show("Player" + (gameBoard.Turn + 1).ToString() + " wins!", "Congratulations!");
+            InitializeMenu();
+        }
+
+        public void OnSinglePlayerGameover(object sender, GameboardEventArgs e)
+        {
+            if (e.GameboardEvent != GAME_EVENT.GAMEOVER)
+                return;
+            MessageBox.Show("Gameover");
             InitializeMenu();
         }
 
@@ -68,20 +76,13 @@ namespace MineSweeper
                     games[0].Initialize(16, 16, 50, this);
                     break;
                 case 2: //Difficult
-                    //games[0].Initialize(25, 25, 100, this);
-                    MultiplayerGame.MineSweeper game01 = new MultiplayerGame.SP_GameBoard();
-                    game01.Initialize(16, 16, 50, this);
-                    game01.GameboardEvent += OnGameover;
+                    games[0].Initialize(25, 25, 100, this);
                     break;
                 case 3:
                     games[1].Initialize(8, 8, 10, this);
                     break;
                 case 4:
-                    //games[1].Initialize(16, 16, 50, this);
-                    MultiplayerGame.MineSweeper game = new MultiplayerGame.MP_GameBoard();
-                    game.Initialize(16, 16, 50, this);
-                    game.GameboardEvent += OnGameover;
-
+                    games[1].Initialize(16, 16, 50, this);
                     break;
                 default:
                     break;
