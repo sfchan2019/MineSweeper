@@ -39,3 +39,12 @@ This repository was created to submit my Mine Sweeper game
 
 ### Things may need to do
 * Add single player feature back to the game;
+
+## Day3
+### Implementation
+* Added single player feature back to the game;
+* Seperated UI elements from the game namespace, placed in UserInterface namespace;
+* Created an abstruct board class for single player and multiplayer game board;
+* Created an abstruct tile class for single player and multiplayer game tile;
+* Relocated some of the classes, the Tile hierachy and Board hierachy are now in the game namespace;
+* Using event handler to handle the clicked mine event;
