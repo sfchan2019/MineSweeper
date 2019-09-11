@@ -103,12 +103,12 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Game\MultiPlayer.csproj">
+    <ProjectReference Include="..\Game\Game.csproj">
       <Project>{57e1b2f9-e6f3-4ff3-9cb0-f05e408e4d76}</Project>
-      <Name>MultiPlayer</Name>
+      <Name>Game</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interface\UserInterface.csproj">
-      <Project>{3f710edf-5e49-4076-9a90-72d25c999883}</Project>
+    <ProjectReference Include="..\UserInterface\UserInterface.csproj">
+      <Project>{56c05831-ff3b-461f-9b47-3e104435948f}</Project>
       <Name>UserInterface</Name>
     </ProjectReference>
   </ItemGroup>
