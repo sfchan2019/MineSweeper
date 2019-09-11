@@ -47,4 +47,17 @@ This repository was created to submit my Mine Sweeper game
 * Created an abstruct board class for single player and multiplayer game board;
 * Created an abstruct tile class for single player and multiplayer game tile;
 * Relocated some of the classes, the Tile hierachy and Board hierachy are now in the game namespace;
-* Using event handler to handle the clicked mine event;
+* Using event handler to handle the event of mine being clicked;
+
+### Class Defintion
+* MineSweeper - The abstruct/base class to create the gameboard for either mulitplayer or single player gameboard;
+* SP_GameBoard - The Single Player Game Board, is designed to avoid all the mines;
+* MP_GameBoard - The Multiplayer Game Board, is designed to see which player first to flagged most of the mines;
+* Tile - The abstruct/base class to created the tile for the gameboard either multi or single player;
+* SP_Tile - The tile used for single player game, this type of tile also handle the double click(invoke neighbour tiles) and right click(flag);
+* MP_Tile - The tile used for multiplaye game, this type of tile only handles the left mouse click(CheckHasObject) and draw a flag when the mine is found; 
+* Player - This class store the player id and score;
+* GameboardEventArgs - This is a derived class of EventArgs, this event args is passed across when a gameboard event is raised, the arg is a selection of enum (GAME_EVENT);
+* GAME_EVENT - This is an enum, a list of game event that can be used to check what type of game event has raised;
+* MainWindow - This class is the entry point of the program also to create the window application;
+
