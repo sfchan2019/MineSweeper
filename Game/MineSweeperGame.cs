@@ -74,14 +74,9 @@ namespace MineSweeperGame
                     List<int> numbers = GetNeighbourIndecies(this.tileID);
                     int count = CountObjFromGroup(numbers);
                     if (count == 0)
-                    {
                         InvokeGroupOfTile(numbers);
-                    }
                     else
-                    {
-                        SetTileImage(count.ToString());
-                        return false;
-                    }
+                        SetTileImage(count.ToString()); 
                 }
             }
             return false;
@@ -212,6 +207,7 @@ namespace MineSweeperGame
         public Canvas GameCanvas { get { return gameCanvas; } }
         public TopBanner TopBannerHUD { get { return topBannerHUD; } }
 
+        //
         public virtual void Initialize(int row, int column, int mine, Window window)
         {
             this.gameWindow = window;
@@ -244,6 +240,7 @@ namespace MineSweeperGame
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
         }
 
+        //Create a list of number that represent mine on the grid
         protected HashSet<int> RandomNumber(int num_of_mine)
         {
             HashSet<int> numbers = new HashSet<int>();
@@ -255,6 +252,7 @@ namespace MineSweeperGame
             return numbers;
         }
 
+        //Given a list of indices of the grid, put mine in to the tile
         protected void SetMine(HashSet<int> numbers, List<Tile> tiles)
         {
             foreach (int i in numbers)

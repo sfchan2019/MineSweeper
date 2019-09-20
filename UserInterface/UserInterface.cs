@@ -13,20 +13,31 @@ namespace UserInterface
 {
     public class Menu
     {
+        //The lowest layer of the UI, draw UI elements on top of canvas
         Canvas canvas;
+        //The dropdown list to select difficulty and game mode
         ComboBox levelOption;
+        //Item of the dropdown list - single player easy level (6 x 6 board with 7 mines)
         ComboBoxItem easy;
+        //Item of the dropdown list - singple player mode normal level (16 x 16 board with 50 mines)
         ComboBoxItem normal;
+        //Item of the dropdown list - single player mode difficult level (25 x 25 board with 100 mines)
         ComboBoxItem difficult;
+        //Item of the dropdown list - multiplayer easy level (8 x 8 board with 10 mines)
         ComboBoxItem pvpEasy;
+        //Item of the dropdown list - multiplayer normal level (16 x 16 board with 50 mines)
         ComboBoxItem pvpNormal;
+        //Start button that generate the game with selected level and game mode
         Button startButton;
+        //The application window
         Window gameWindow;
+        //The brush to draw image using image source 
         ImageBrush imageBrush;
 
         public Button StartButton { get { return startButton; } }
         public ComboBox LevelOption { get { return levelOption; } }
 
+        //Constructor
         public Menu(Window window)
         {
             gameWindow = window;
