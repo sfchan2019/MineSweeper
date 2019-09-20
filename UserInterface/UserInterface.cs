@@ -40,12 +40,16 @@ namespace UserInterface
         //Constructor
         public Menu(Window window)
         {
+            //Take the application window reference and store it in variable within this class
             gameWindow = window;
+            //Create a new image brush and give it an image source
             imageBrush = new ImageBrush();
             imageBrush.ImageSource = new BitmapImage(new Uri("Resources/background.bmp", UriKind.Relative));
+            //Initialize the Menu (Create content)
             Initialize();
         }
 
+        //Create the content for the menu
         public void Initialize()
         {
             canvas = new Canvas();
