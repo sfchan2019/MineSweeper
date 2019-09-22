@@ -52,57 +52,78 @@ namespace UserInterface
         //Create the content for the menu
         public void Initialize()
         {
+            //Create new Canvase object
             canvas = new Canvas();
+            //Set the Height and Width for the menu
             canvas.Height = 250;
             canvas.Width = 250;
+            //Set the alignment style for the menu
             canvas.HorizontalAlignment = HorizontalAlignment.Stretch;
             canvas.VerticalAlignment = VerticalAlignment.Stretch;
+            //set background image
             canvas.Background = imageBrush;
-
+            
+            //Create Dropdown menu
             levelOption = new ComboBox();
+            //Set the Height and Width
             levelOption.Height = 22;
             levelOption.Width = 100;
+            //Set the alignment style for the dropdown menu
             levelOption.HorizontalAlignment = HorizontalAlignment.Center;
             levelOption.VerticalAlignment = VerticalAlignment.Center;
+            //Set the position of the dropdown menu, 150px down from the top of the canvas
             levelOption.SetValue(Canvas.TopProperty, (double)150);
+            //80px to the right, from the left of the canvase
             levelOption.SetValue(Canvas.LeftProperty, (double)80);
 
+            //Create new dropdown menu items and add them to the dropdown menu
+            //Single player - Easy
             easy = new ComboBoxItem();
             easy.Content = "Easy";
             levelOption.Items.Add(easy);
-
+            //Single player - Normal
             normal = new ComboBoxItem();
             normal.Content = "Normal";
             levelOption.Items.Add(normal);
-
+            //Single player - difficult
             difficult = new ComboBoxItem();
             difficult.Content = "Difficult";
             levelOption.Items.Add(difficult);
-
+            //Mutliplayer - Easy
             pvpEasy = new ComboBoxItem();
             pvpEasy.Content = "PvP (Easy)";
             pvpEasy.IsSelected = true;
             levelOption.Items.Add(pvpEasy);
-
+            //Multiplayer - Difficult
             pvpNormal = new ComboBoxItem();
             pvpNormal.Content = "PvP (Normal)";
             pvpNormal.IsSelected = true;
             levelOption.Items.Add(pvpNormal);
-
-
+            
+            //Add the dropdown menu to the main menu
             canvas.Children.Add(levelOption);
 
+            //Create start button
             startButton = new Button();
+            //Set the width of the button to be 75px 
             startButton.Width = 75;
+            //Write Start on the button
             startButton.Content = "Start";
+            //Set the position of the button, 180px from the top of the canvas
             startButton.SetValue(Canvas.TopProperty, (double)180);
+            //80px from the left of the canvas
             startButton.SetValue(Canvas.LeftProperty, (double)80);
+            //Add the start button to main menu
             canvas.Children.Add(startButton);
 
+            //Set the current content to be this menu (Display the menu)
             gameWindow.Content = this.canvas;
+            //Make the window to be size to content
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
     }
+
+    //The top banner of the gameboard
     public class TopBanner
     {
         double width;
