@@ -177,16 +177,22 @@ namespace UserInterface
         //Initialize banner, can be called to recreate the banner
         public void Initialize()
         {
+            //Create the list containter for the fields
             indicators = new List<Rectangle>();
+            //Create the list containters for the scores label
             Scores = new List<Label>();
+
+            //Create the background, set size and colour to HotPink
             background = new Rectangle()
             {
                 Width = this.width,
                 Height = this.height,
                 Fill = Brushes.HotPink,
             };
+            //Add the background to canvas
             gameCanvas.Children.Add(background);
 
+            //Create the left field and change the style
             leftField = new Rectangle()
             {
                 Width = this.width / 7 * 3,
@@ -194,9 +200,11 @@ namespace UserInterface
                 Fill = Brushes.Red,
                 StrokeThickness = 5,
             };
+            //Add it to the canvas and store in the list
             gameCanvas.Children.Add(leftField);
             indicators.Add(leftField);
 
+            //Create the right feild and change the style
             rightField = new Rectangle()
             {
                 Width = this.width / 7 * 3,
@@ -204,55 +212,71 @@ namespace UserInterface
                 Fill = Brushes.Blue,
                 StrokeThickness = 5,
             };
+            //Place the rectangle on the right
             rightField.SetValue(Canvas.RightProperty, 0.0);
+            //Add it to the canvas and store it in the list
             gameCanvas.Children.Add(rightField);
             indicators.Add(RightField);
 
+            //Create name label, change the font size to 35 and set default value to Player 1
             leftName = new Label();
             leftName.FontSize = 35;
             leftName.Content = "Player1";
+            //Add it to the canvas
             gameCanvas.Children.Add(leftName);
 
+            //Create score label, change the font size to 25 and set default vault to 0
             leftScore = new Label();
             leftScore.FontSize = 25;
             leftScore.Content = 0;
+            //Place it to the center (vertically)
             leftScore.SetValue(Canvas.TopProperty, background.Height / 2);
+            //Add it to the canvas and store to the list
             gameCanvas.Children.Add(leftScore);
             Scores.Add(LeftScore);
 
+            //Create name label, change the font size to 35, set default value to Player 2
             rightName = new Label();
             rightName.FontSize = 35;
+            //Place it on the right
             rightName.SetValue(Canvas.RightProperty, 0.0);
             rightName.Content = "Player2";
+            //Add the label to canvas
             gameCanvas.Children.Add(rightName);
 
+            //Create score label, change the font size to 25, default value to 0
             rightScore = new Label();
             rightScore.FontSize = 25;
+            //Place it on the right
             rightScore.SetValue(Canvas.RightProperty, 0.0);
+            //Place it in the center (Vertically)
             rightScore.SetValue(Canvas.TopProperty, background.Height / 2);
             rightScore.Content = 0;
-
+            //Add the label to canvas and store to the list
             gameCanvas.Children.Add(rightScore);
             Scores.Add(rightScore);
 
+            //Create the winning condition label, set font size, place it at the center of the banner, default value to 25
             winCondition = new Label();
             winCondition.FontSize = 40;
             winCondition.SetValue(Canvas.TopProperty, background.Height / 4);
             winCondition.SetValue(Canvas.RightProperty, background.Width / 2 - winCondition.FontSize / 1.5);
             winCondition.Content = 25;
+            //Add the label to canvas
             gameCanvas.Children.Add(winCondition);
         }
 
+        //Pass in the player id to remove indicator/border on the field (0 for the left, 1 for the right)
         public void RemoveIndicator(int i)
         {
             indicators[i].Stroke = null;
         }
-
+        //Pass in the player id to add indicator/border on the field (0 for the left, 1 for the right)
         public void AddIndicator(int i)
         {
             indicators[i].Stroke = Brushes.GreenYellow;
         }
-
+        //Pass in the turn/player id, and new score to update the value of the score label
         public void UpdateScore(int turn, int newScore)
         {
             Scores[turn].Content = newScore;
