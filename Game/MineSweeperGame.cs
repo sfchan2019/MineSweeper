@@ -78,30 +78,46 @@ namespace MineSweeperGame
         public virtual void OnRightClickTile(object sender, RoutedEventArgs e) { }
         //Double Click Event Handler, available for overriding
         public virtual void OnDoubleClickTile(object sender, MouseButtonEventArgs e) { }
-
+        
+        //This fucntion check if the tile has a mine
         public virtual bool CheckHasObject()
         {
+            //If the tile is already checked, return false
             if (isFinish)
                 return false;
             else
             {
+                //Check this button
                 this.isFinish = true;
+                //If this tile has a mine
                 if (this.hasMine)
                 {
+                    //Raise a collect object event and return true for this function
                     this.RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
                     return true;
                 }
                 else
                 {
-                    List<int> numbers = GetNeighbourIndecies(this.tileID);
-                    int count = CountObjFromGroup(numbers);
-                    if (count == 0)
-                        InvokeGroupOfTile(numbers);
-                    else
-                        SetTileImage(count.ToString()); 
+                    //Check how many mines next to this tile
+                    CheckObjectAroundTile();
                 }
             }
             return false;
+        }
+
+        //Check the number of mine next to the tile
+        public void CheckObjectAroundTile()
+        {
+            //Get the indecies of the surrounding tile and store them into list
+            List<int> numbers = GetNeighbourIndecies(this.tileID);
+            //count the number of mines using the list
+            int count = CountObjFromGroup(numbers);
+            //if there are no mines around the tile, automatically check all the surrounding tiles
+            if (count == 0)
+                InvokeGroupOfTile(numbers);
+            else
+                //Set the image of the tile
+                SetTileImage(count.ToString());
         }
 
         public virtual void OnCollectObject(Object sender, GameboardEventArgs e)
