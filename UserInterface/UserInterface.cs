@@ -126,21 +126,35 @@ namespace UserInterface
     //The top banner of the gameboard
     public class TopBanner
     {
+        //width and height for the banner
         double width;
         double height;
-        Rectangle background;  //canvas width
-        Rectangle leftField;   //canvas.width/7*3
-        Rectangle rightField;   //canvas.width/7*3
+        //Divide the banner by 3 horizontally
+        //The lowest layer of the banner
+        Rectangle background;
+        //The left part of the banner, place it on the left above the background to divide the banner
+        Rectangle leftField;   //Size: canvas.width/7*3
+        //The right part of the banner, place it on the right and above the background to divide the banner
+        Rectangle rightField;   //Size: canvas.width/7*3
+        //The variable to store the reference of the gameboard canvas
         Canvas gameCanvas;
 
+        //The label for the name on the left (Player 1)
         Label leftName;
+        //The label for the score on the left (Player 1 score)
         Label leftScore;
+        //The label for the name on the right (Player 2)
         Label rightName;
+        //The label for the score on the right (Player 2 score)
         Label rightScore;
+        //The label in the center to indicate the winning condiiton (Total mine/2 + 1)
         Label winCondition;
+        //A list container to manage the score label
         List<Label> Scores;
+        //A list containter to manger the fields (Add/Remove border to indicate player's turn)
         List<Rectangle> indicators;
 
+        //Encapsulation
         public List<Rectangle> Indicators;
         public Label LeftName { get { return leftName; } set { leftName = value; } }
         public Label LeftScore { get { return leftScore; } set { leftScore = value; } }
@@ -150,6 +164,7 @@ namespace UserInterface
         public Rectangle LeftField { get { return leftField; } set { leftField = value; } }
         public Rectangle RightField { get { return rightField; } set { rightField = value; } }
 
+        //Constructor
         public TopBanner(double width, double height, Canvas canvas)
         {
             this.gameCanvas = canvas;
@@ -159,6 +174,7 @@ namespace UserInterface
             Initialize();
         }
 
+        //Initialize banner, can be called to recreate the banner
         public void Initialize()
         {
             indicators = new List<Rectangle>();
