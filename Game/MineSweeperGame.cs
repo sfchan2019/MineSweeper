@@ -17,44 +17,66 @@ using UserInterface;
 
 namespace MineSweeperGame
 {
+    //Declare an enum of GAME EVENT TYPE for comparison of GameboardEventArgs
     public enum GAME_EVENT
     {
         GAMEOVER, COLLECT_OBJECT,
     }
+
+    //Create an EventArgs child class to handle gameboard events
     public class GameboardEventArgs : EventArgs
     {
+        //Store the game event type 
         GAME_EVENT e;
+
+        //Get the game event type, can be used to compare event type with in an event handler
         public GAME_EVENT GameboardEvent { get { return e; } }
+
+        //Constructor, pass the event type (game over, collected object etc.
         public GameboardEventArgs(GAME_EVENT e) {this.e = e; }
     }
+    
+    //An abstruct class for Tile, will be inherited by single player tiles and multipler tiles
     public abstract class Tile
     {
+        //Declare a delegate
         public delegate void GameEvent(Object sender, GameboardEventArgs e);
+
+        //Declare a event handler of the type GameEvent (The delegate declared above)
         public GameEvent GameEventHandler;
+
+        //Create a function to raise/fire gameboard event
         public void RaiseEvent(GameboardEventArgs e)
         {
+            //Only execute if there are event listener listing to events
             if (GameEventHandler != null)
                 GameEventHandler(this, e);
         }
 
+        //Declare a button
         protected Button button;
+        //A variable to store the refernce of the gameobard
         protected MineSweeper gameBoard;
+        //The postiion of the tile (At which row in the grid)
         protected int row;
+        //The position of the tile (At which column in the grid)
         protected int column;
+        //The ID of the tile, convert the index of a 2D array to 1D array
         protected int tileID;
+        //A flag to tell if this tile has a mine
         protected bool hasMine;
+        //A flag to tell if this tile is finished (Checked)
         protected bool isFinish;
 
+        //Encapsulation
         public bool HasMine { get { return hasMine; } }
         public bool IsFinish { get { return isFinish; } }
 
-        public virtual void OnLeftClickTile(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        //Left Click Event Handler, available for overriding
+        public virtual void OnLeftClickTile(object sender, RoutedEventArgs e) { }
+        //Right Click Event Handler, available for overriding
         public virtual void OnRightClickTile(object sender, RoutedEventArgs e) { }
-
+        //Double Click Event Handler, available for overriding
         public virtual void OnDoubleClickTile(object sender, MouseButtonEventArgs e) { }
 
         public virtual bool CheckHasObject()
