@@ -446,82 +446,116 @@ namespace MineSweeperGame
         }
     }
 
+    //Single player tile
     public class SP_Tile : Tile
     {
+        //Store reference of single player gameboard
         SP_GameBoard board;
+
+        //Constructor
         public SP_Tile(int row, int column, MineSweeper gameBoard)
         {
+            //Store values
             this.column = column;
             this.row = row;
             this.gameBoard = gameBoard;
             this.tileID = column + row * gameBoard.Column;
             this.isFinish = false;
+            //Cast the gameboard to single player gameboard and store it
             board = gameBoard as SP_GameBoard;
+            //New button
             button = new Button();
             hasMine = false;
+            //Add Event Handlers to the button
             button.Click += OnLeftClickTile;
             button.MouseDoubleClick += OnDoubleClickTile;
             button.MouseRightButtonDown += OnRightClickTile;
+            //Set button position (Within the grid)
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
+            //Add button to the grid
             gameBoard.GameBoard.Children.Add(button);
+            //Add event handler for this tile (On Click the Mine)
             GameEventHandler += OnCollectObject;
         }
 
+        //Override the On Click Mine Event Handler, Do not call the base.OnCollectObject();
         public override void OnCollectObject(object sender, GameboardEventArgs e)
         {
+            //Check event type
             if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
                 return;
+            //Show all the mine
             board.ShowAllMine();
+            //Fire gameover event
             board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
         }
 
+        //Override Left Click Event Handler
         public override void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
+            //Call the base function first
             base.OnLeftClickTile(sender, e);
+            //return from function if the tile is already checked
             if (isFinish)
                 return;
+            //Check the tile
             this.isFinish = true;
+            //Remove right click event handler (avoid flagging a checked tile)
             button.MouseRightButtonDown -= OnRightClickTile;
+            //Count the checked tile
             board.FinishCount++;
+            //If clicked on a mine, fire event
             if (CheckHasObject())
                 RaiseEvent(new GameboardEventArgs(GAME_EVENT.COLLECT_OBJECT));
         }
 
+        //override the check object/mine function
         public override bool CheckHasObject()
         {
             if (HasMine)
                 return true;
             else
             {
+                //Get the indices of the surrounding tiles
                 List<int> numbers = GetNeighbourIndecies(this.tileID);
+                //Count the number of mines for the surrounding tiles
                 int count = CountObjFromGroup(numbers);
+                //If not mines near
                 if (count == 0)
                 {
+                    //Disable the button, change the style as well
                     this.button.IsEnabled = false;
+                    //Automatically check the surrounding tiles
                     InvokeGroupOfTile(numbers);
                 }
                 else
                 {
+                    //Set the tile image (write number to the tile)
                     SetTileImage(count.ToString());
                     return false;
                 }
             }
-
             return false;
         }
 
+        //Override this function, Check a group of tile
         public override void InvokeGroupOfTile(List<int> numbers)
         {
+            //First check if the surrounding tiles have mine
             foreach (int i in numbers)
             {
+                //cast the tile stored tile to single player tile
                 SP_Tile temp = gameBoard.Tiles[i] as SP_Tile;
+                //if has mine and is not checked 
                 if (temp.hasMine && !temp.isFinish)
                 {
+                    //fire event, return from the function so it does not check for the number of mines for the rest of the tile
                     temp.button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                     return;
                 }
             }
+            //Then check for each tile, how many mines are nearby
             foreach (int i in numbers)
             {
                 SP_Tile temp = gameBoard.Tiles[i] as SP_Tile;
@@ -529,37 +563,51 @@ namespace MineSweeperGame
             }
         }
 
+        //Double Click Event Handler
         public override void OnDoubleClickTile(object sender, MouseButtonEventArgs e)
         {
             base.OnDoubleClickTile(sender, e);
-
+            //Check button event, Check the group of tile that is surrouded this tile
             if (e.ChangedButton == MouseButton.Left)
                 InvokeGroupOfTile(GetNeighbourIndecies(tileID));
         }
 
+        //Right Click Event Handler
         public override void OnRightClickTile(object sender, RoutedEventArgs e)
         {
             base.OnRightClickTile(sender, e);
+            //Flag the tile
             FlagTile();
         }
 
+        //Flag the tile
         public void FlagTile()
         {
+            //If the tile is not checked
             if (!isFinish)
             {
+                //Give a flag image to the tile
                 SetTileImage("F");
+                //Remove Double Click Event Handler
                 button.MouseDoubleClick -= OnDoubleClickTile;
+                //Increase checked tile count
                 board.FinishCount++;
+                //if flagging a mine, minus 1 from the mine counter
                 if (hasMine)
                     board.Mine--;
+                //If no more mine in the gameboard, fire gameover event
                 if (board.Mine == 0)
                     board.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
             }
             else
             {
+                //Remove the flag image from the tile
                 SetTileImage("U");
+                //Give the Double Click Event Handler back to the tile
                 button.MouseDoubleClick += OnDoubleClickTile;
+                //Add 1 back to the checked tile counter
                 board.FinishCount--;
+                //if unflagging a mine, add 1 back to the mine counter
                 if (hasMine)
                     board.Mine++;
             }
