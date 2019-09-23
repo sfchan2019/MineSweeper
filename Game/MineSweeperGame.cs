@@ -641,10 +641,13 @@ namespace MineSweeperGame
         }
     }
 
+    //Multiplayer gameboard
     public class MP_GameBoard : MineSweeper
     {
+        //Constructor
         public MP_GameBoard() { }
 
+        //Initialize
         public override void Initialize(int row, int column, int mine, Window window)
         {
             //assign values to variables
@@ -666,28 +669,40 @@ namespace MineSweeperGame
                     tiles.Add(tile);
                 }
             }
+            //Randomly place mine to the gameboard
             SetMine(RandomNumber(mine), tiles);
 
+            //Create the top banner to show the players information
             topBannerHUD = new TopBanner(this.gameCanvas.Width, topPadding, this.gameCanvas);
+            //Update the win condition
             topBannerHUD.WinCondition.Content = mine / 2 + 1;
+            //Create two players
             for (int i = 0; i < 2; i++)
             {
                 players.Add(new Player(i, this));
             }
-
+            //Add the gameboard(grid) to canvas
             gameCanvas.Children.Add(this.gameBoard);
+            //Display the canvas
             gameWindow.Content = this.gameCanvas;
+            //Window size to content
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
-
+            //Switch player turn - Start from 0
             SwitchPlayerTurn();
         }
 
+        //Switch to next player
         public void SwitchPlayerTurn()
         {
+            //cast the turn from int to boolean, so the variable turn can be toggle
             bool bTurn = Convert.ToBoolean(turn);
+            //Remove the border on the top banner for the current player
             topBannerHUD.RemoveIndicator(Convert.ToInt32(bTurn));
+            //toggle the turn
             bTurn = !bTurn;
+            //Add the border on the top banner for the next player
             topBannerHUD.AddIndicator(Convert.ToInt32(bTurn));
+            //Cast the bool to int assign to turn so the turn variable is updated
             turn = Convert.ToInt32(bTurn);
         }
     }
