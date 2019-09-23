@@ -348,35 +348,48 @@ namespace MineSweeperGame
         }
     }
 
+    //The tile used in Multiplayer game mode
     public class MP_Tile : Tile
     {
+        //Constructor
         public MP_Tile(int row, int column, MineSweeper gameBoard)
         {
+            //store the values
             this.column = column;
             this.row = row;
             this.gameBoard = gameBoard;
             this.tileID = column + row * gameBoard.Column;
             this.isFinish = false;
+            //Create new button for the tile
             button = new Button();
             hasMine = false;
+            //Give the button Left Click Event Handler
             button.Click += OnLeftClickTile;
             button.Background = Brushes.SkyBlue;
+            //Set the position of the button in grid
             System.Windows.Controls.Grid.SetColumn(this.button, column);
             System.Windows.Controls.Grid.SetRow(this.button, row);
+            //Add the button to grid
             gameBoard.GameBoard.Children.Add(button);
+            //Give the tile OnCollectObject Event Handler (On Click Mine)
             GameEventHandler += OnCollectObject;
         }
 
+        //Override Left Click Event Handler
         public override void OnLeftClickTile(object sender, RoutedEventArgs e)
         {
+            //Call the parent's function
             base.OnLeftClickTile(sender, e);
+            //return if the tile is checked
             if (isFinish)
                 return;
+            //If the tile has no mine, switch to another player
             if (!CheckHasObject())
                 (gameBoard as MP_GameBoard).SwitchPlayerTurn();
         }
     }
 
+    //Single Player Gameboard
     public class SP_GameBoard : MineSweeper
     {
         int finishCount;
