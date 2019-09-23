@@ -120,20 +120,29 @@ namespace MineSweeperGame
                 SetTileImage(count.ToString());
         }
 
+        //On CollectObject/ ClickMine Event Handler, only multiplayer game mode use it
         public virtual void OnCollectObject(Object sender, GameboardEventArgs e)
         {
+            //Check event type
             if (e.GameboardEvent != GAME_EVENT.COLLECT_OBJECT)
                 return;
+            //Add score to the current player
             gameBoard.Players[gameBoard.Turn].Score++;
+            //Update the score label
             gameBoard.TopBannerHUD.UpdateScore(gameBoard.Turn, gameBoard.Players[gameBoard.Turn].Score);
+            //Flag the mine
             SetTileImage("F");
+            //If player has found more than half of the mines, gameover
             if(gameBoard.Players[gameBoard.Turn].Score > gameBoard.Mine/2)
                 gameBoard.RaiseEvent(new GameboardEventArgs(GAME_EVENT.GAMEOVER));
         }
 
+        //Check a list of tiles
         public virtual void InvokeGroupOfTile(List<int> numbers)
         {
+            //Disable the clicked button, this will change the style as well
             this.button.IsEnabled = false;
+            //Check each tile from the list
             foreach (int i in numbers)
             {
                 Tile temp = gameBoard.Tiles[i];
@@ -141,10 +150,11 @@ namespace MineSweeperGame
             }
         }
 
+        //Count the mines from a group (The tiles around the target tile)
         public virtual int CountObjFromGroup(List<int> numbers)
         {
             int count = 0;
-
+            //Check each tile has mine, add one to count if true
             foreach (int i in numbers)  //Count number of mine
             {
                 Tile temp = gameBoard.Tiles[i];
@@ -154,30 +164,40 @@ namespace MineSweeperGame
             return count;
         }
 
+        //Get the indecies for the surrounding tiles 
         protected List<int> GetNeighbourIndecies(int i)
         {
+            //Get the x, y coodinate
             int x = i % this.gameBoard.Column;
             int y = i / this.gameBoard.Column;
 
+            //Create a list to store the indecies
             List<int> numbers = new List<int>();
 
-            if (x != 0)                             //if not on the left column
+            //if not on the left column, add the left tile 
+            if (x != 0)                             
                 numbers.Add(i - 1);
-            if (x != this.gameBoard.Column - 1)                    //if not on the right column
+            //if not on the right column, add the right tile
+            if (x != this.gameBoard.Column - 1)                
                 numbers.Add(i + 1);
-            if (y != 0)                             //if not on the top row
+            //if not on the top row, add the tile above
+            if (y != 0)                             
                 numbers.Add(i - this.gameBoard.Column);
-            if (y != 0 && x != 0)                   //if not on the top row AND not on the left column
+            //if not on the top row AND not on the left column, add the top left tile
+            if (y != 0 && x != 0)                   
                 numbers.Add(i - this.gameBoard.Column - 1);
-            if (y != 0 && x != this.gameBoard.Column - 1)          //if not on the top row AND not on the right column
+            //if not on the top row AND not on the right column, add the top right tile
+            if (y != 0 && x != this.gameBoard.Column - 1)          
                 numbers.Add(i - this.gameBoard.Column + 1);
-            if (y != this.gameBoard.Row - 1)                       //if not on the button row
+            //if not on the button row, add the tile below
+            if (y != this.gameBoard.Row - 1)                       
                 numbers.Add(i + this.gameBoard.Column);
-            if (y != this.gameBoard.Row - 1 && x != this.gameBoard.Column - 1)    //if not on the bottm row AND not on the right column
+            //if not on the bottm row AND not on the right column, add the bottom right tile
+            if (y != this.gameBoard.Row - 1 && x != this.gameBoard.Column - 1)    
                 numbers.Add(i + this.gameBoard.Column + 1);
-            if (y != this.gameBoard.Row - 1 && x != 0)             //if not on the bottom row AND not on the left column
+            //if not on the bottom row AND not on the left column, add the bottom left tile
+            if (y != this.gameBoard.Row - 1 && x != 0)             
                 numbers.Add(i + this.gameBoard.Column - 1);
-
             return numbers;
         }
 
