@@ -614,20 +614,25 @@ namespace MineSweeperGame
             isFinish = !isFinish;
         }
 
+        //Override the Set Image function
         public override void SetTileImage(string text)
         {
             switch (text)
             {
-                case "M":   //Mine
+                //M stand for Mine, set the image to mine
+                case "M":   
                     button.Content = new Image() { Source = gameBoard.MineImage };
                     break;
-                case "F":   //Flag
+                //F for Flag, set the the image to flag
+                case "F":   
                     button.Content = new Image() { Source = gameBoard.FlagImage };
                     break;
-                case "U":   //Unflag
+                //U for Unflag, remove the image and set the background colour back to LightGray
+                case "U":
                     button.Content = "";
                     button.Background = Brushes.LightGray;
                     break;
+                //Any numbers from 0 to 8 goes here, change the content to text and background colour
                 default:
                     button.Content = text;
                     button.Background = Brushes.SkyBlue;
