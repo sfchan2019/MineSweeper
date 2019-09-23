@@ -392,13 +392,20 @@ namespace MineSweeperGame
     //Single Player Gameboard
     public class SP_GameBoard : MineSweeper
     {
+        //Count the number of mine that has been flagged
         int finishCount;
+        //Encapsulation
         public int FinishCount { get { return finishCount; } set { finishCount = value; } }
+
+        //Constructor
         public SP_GameBoard() { }
 
+        //Init
         public override void Initialize(int row, int column, int mine, Window window)
         {
+            //Call the base Init - from the abstruct class
             base.Initialize(row, column, mine, window);
+            //Set background colour
             gameBoard.Background = new SolidColorBrush(Colors.LightGray);
 
             //Create rows
@@ -417,13 +424,18 @@ namespace MineSweeperGame
                     tiles.Add(tile);
                 }
             }
+            //Randomly place the mines
             SetMine(RandomNumber(mine), tiles);
 
+            //Add the gameboard to the canvas
             gameCanvas.Children.Add(this.gameBoard);
+            //Display the canvas
             gameWindow.Content = this.gameCanvas;
+            //Window size to content
             gameWindow.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
+        //Shows all the mines (Call it when gameover)
         public void ShowAllMine()
         {
             foreach (Tile t in tiles)
