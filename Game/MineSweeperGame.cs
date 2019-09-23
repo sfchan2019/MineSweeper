@@ -707,18 +707,23 @@ namespace MineSweeperGame
         }
     }
 
+    //The player class to store id and score, can be further expanded to contain name
     public class Player
     {
+        //Variables
         int score;
         int id;
         MP_GameBoard gameBoard;
 
+        //Encapsulation
         public int Score
         {
             get { return score; }
             set { score = value; }
         }
         public int Id { get { return id; } }
+
+        //Constructor, store the player id, and gameboard reference
         public Player(int id, MP_GameBoard gameboard)
         {
             this.id = id;
