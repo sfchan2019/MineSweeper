@@ -201,55 +201,78 @@ namespace MineSweeperGame
             return numbers;
         }
 
+        //Set Image for the tile, override in the child class for different images and cases
         public virtual void SetTileImage(string text)
         {
             switch (text)
             {
-                case "F":   //Flag
+                //Set to Flag Image, colour depends on the current player
+                case "F":   
                     if (gameBoard.Turn == 0)
                         button.Content = new Image() { Source = gameBoard.RedFlagImage };
                     else if (gameBoard.Turn == 1)
                         button.Content = new Image() { Source = gameBoard.BlueFlagImage };
                     break;
+                //Write 0-9 on the tile
                 default:
                     button.Content = text;
                     button.Background = Brushes.Gold;
                     break;
             }
         }
+
+        //Give mine to the tile
         public void SetMine(bool mine)
         {
             this.hasMine = mine;
         }
     }
 
+    //Abstracut gameboard class
     public abstract class MineSweeper
     {
+        //Declare a delegate to be used for event handler
         public delegate void GameboardEventHandler(object sender, GameboardEventArgs e);
+        //Declare a GameboardEvent Handler using the delegate type created above
         public event GameboardEventHandler GameboardEvent;
+        //Create a function to fire event
         public void RaiseEvent(GameboardEventArgs e)
         {
             if (GameboardEvent != null)
                 GameboardEvent(this, e);
         }
 
+        /*Declare variables*/
+        //Images for the tiles, mine, flag, red and blue flag
         protected BitmapImage mineImage;
         protected BitmapImage flagImage;
         protected BitmapImage redFlagImage;
         protected BitmapImage blueFlagImage;
+        //window variable to store the main window
         protected Window gameWindow;
+        //list container for tiles
         protected List<Tile> tiles;
+        //The WPF grid as gameboard
         protected Grid gameBoard;
+        //The number of row and column in the grid
         protected int row;
         protected int column;
+        //The number of mine in this gameboard
         protected int mine;
+        //Player's turn, 0 for player1, 1 for player2
         protected int turn = 0;
+        //Top padding, leave 100px for at the top of the banner/UI
         protected double topPadding = 100;
+        //The size of each tile
         protected float blockSize;
+        //List container to manage players
         protected List<Player> players;
+        //Canvas to draw 
         protected Canvas gameCanvas;
+        //The top banner, this display the players name and score, win condition
         protected TopBanner topBannerHUD;
 
+        //Encapsulation
         public BitmapImage RedFlagImage { get { return redFlagImage; } }
         public BitmapImage BlueFlagImage { get { return blueFlagImage; } }
         public BitmapImage MineImage { get { return mineImage; } }
@@ -265,26 +288,31 @@ namespace MineSweeperGame
         public Canvas GameCanvas { get { return gameCanvas; } }
         public TopBanner TopBannerHUD { get { return topBannerHUD; } }
 
-        //
+        //Initialize the gameboard
         public virtual void Initialize(int row, int column, int mine, Window window)
         {
+            //Store the values
             this.gameWindow = window;
             this.row = row;
             this.column = column;
             this.mine = mine;
 
+            //Create images and store them so they are ready to be used
             mineImage = new BitmapImage(new Uri("Resources/mine.bmp", UriKind.Relative));
             redFlagImage = new BitmapImage(new Uri("Resources/flag0.bmp", UriKind.Relative));
             blueFlagImage = new BitmapImage(new Uri("Resources/flag1.bmp", UriKind.Relative));
             flagImage = new BitmapImage(new Uri("Resources/flag.bmp", UriKind.Relative));
 
+            //Create new objects and store them in variables
             gameCanvas = new Canvas();
             tiles = new List<Tile>();
             gameBoard = new Grid();
+            //The more the row in the grid, the smaller the tiles are
             blockSize = 50 - row;
             turn = -1;
             players = new List<Player>();
 
+            //Calculate the Width and Height for the grid, set the canvas size
             gameCanvas.Width = column * blockSize;
             gameCanvas.Height = row * blockSize + topPadding;
 
@@ -298,11 +326,13 @@ namespace MineSweeperGame
             gameBoard.Background = new SolidColorBrush(Colors.LightSteelBlue);
         }
 
-        //Create a list of number that represent mine on the grid
+        //Create a list of number(Randomly) that represent mine on the grid
         protected HashSet<int> RandomNumber(int num_of_mine)
         {
+            //Use hashset so the random numbers are not repeated
             HashSet<int> numbers = new HashSet<int>();
             Random random = new Random();
+            //Generate random number
             while (numbers.Count < num_of_mine)
             {
                 numbers.Add(random.Next(0, (row * column) - 1));
